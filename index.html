@@ -408,7 +408,12 @@ function consultarEstado() {
 
 // ── RENDERIZAR RESULTADO ───────────────────────────────────
 function renderizarResultado(d) {
+  if (!d || !d.resultado) {
+    mostrarError('El resultado no tiene el formato esperado. Recarga la página.');
+    return;
+  }
   var r = d.resultado;
+  console.log('data completo:', JSON.stringify(d).substring(0, 500));
 
   // Meta
   document.getElementById('meta-resultado').innerHTML =
