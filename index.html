@@ -373,7 +373,8 @@ function consultarEstado() {
         clearInterval(intervaloPasos);
         document.getElementById('barra-progreso').style.width = '100%';
         document.getElementById('paso-texto').textContent = '¡Listo! Cargando tu resultado...';
-        setTimeout(function() { cargarResultado(); }, 600);
+        // Resultado ya viene en la misma respuesta — no necesita segunda llamada
+        setTimeout(function() { renderizarResultado(data); }, 600);
 
       } else if (data.estado === 'BLOQUEADO') {
         clearInterval(intervaloPasos);
@@ -391,7 +392,7 @@ function consultarEstado() {
 }
 
 // ── CARGAR RESULTADO COMPLETO ──────────────────────────────
-function cargarResultado() {
+/*function cargarResultado() {
   var url = APPS_SCRIPT_URL + '?action=data&resultId=' + encodeURIComponent(resultId);
 
   fetch(url)
@@ -403,7 +404,7 @@ function cargarResultado() {
     .catch(function(err) {
       mostrarError('Error al cargar el resultado: ' + err.message);
     });
-}
+}*/
 
 // ── RENDERIZAR RESULTADO ───────────────────────────────────
 function renderizarResultado(d) {
