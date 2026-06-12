@@ -454,10 +454,42 @@ function renderizarResultado(d) {
   document.getElementById('aviso-saldo').innerHTML = avisoHtml;
 
   // Botón PDF
-  var urlPDF = r.urlPDF || '';
-  document.getElementById('btn-pdf').href = urlPDF || '#';
-  if (!urlPDF) {
-    document.getElementById('btn-pdf').textContent = '📄 PDF en proceso...';
+var urlPDF = r.urlPDF || '';
+  if (urlPDF) {
+    document.getElementById('btn-pdf').href = urlPDF;
+    document.getElementById('btn-pdf').textContent = '⬇️ Descargar PDF';
+  } else {
+    document.getElementById('btn-pdf').textContent = '⏳ Generando PDF...';
+    document.getElementById('btn-pdf').href = '#';
+    // Reintentar cada 5 segundos hasta que el PDF esté listo
+    var intentosPDF = 0;
+    var intervaloPDF = setInterval(function() {
+      intentosPDF++;
+      if (intentosPDF > 12) { // máximo 1 minuto
+        clearInterval(intervaloPDF);
+        document.getElementById('btn-pdf').textContent = '📄 PDF no disponible';
+        return;
+      }
+      var cbName = 'cb_pdf_' + Date.now();
+      var s = document.createElement('script');
+      window[cbName] = function(data) {
+        delete window[cbName];
+        try { document.body.removeChild(s); } catch(e) {}
+        if (data.resultado && data.resultado.urlPDF) {
+          clearInterval(intervaloPDF);
+          document.getElementById('btn-pdf').href = data.resultado.urlPDF;
+          document.getElementById('btn-pdf').textContent = '⬇️ Descargar PDF';
+        }
+      };
+      s.onerror = function() {
+        delete window[cbName];
+        try { document.body.removeChild(s); } catch(e) {}
+      };
+      s.src = APPS_SCRIPT_URL +
+        '?action=status&resultId=' + encodeURIComponent(resultId) +
+        '&callback=' + cbName;
+      document.body.appendChild(s);
+    }, 5000);
   }
 
   // Botón WhatsApp
