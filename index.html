@@ -364,31 +364,43 @@ function consultarEstado() {
     return;
   }
 
-  var url = APPS_SCRIPT_URL + '?action=status&resultId=' + encodeURIComponent(resultId);
+  var callbackName = 'cb_status_' + Date.now();
+  var script       = document.createElement('script');
 
-  fetch(url)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.estado === 'LISTO') {
-        clearInterval(intervaloPasos);
-        document.getElementById('barra-progreso').style.width = '100%';
-        document.getElementById('paso-texto').textContent = '¡Listo! Cargando tu resultado...';
-        // Resultado ya viene en la misma respuesta — no necesita segunda llamada
-        setTimeout(function() { renderizarResultado(data); }, 600);
+  window[callbackName] = function(data) {
+    delete window[callbackName];
+    try { document.body.removeChild(script); } catch(e) {}
 
-      } else if (data.estado === 'BLOQUEADO') {
-        clearInterval(intervaloPasos);
-        mostrarBloqueado(resultId);
+    console.log('JSON recibido:', JSON.stringify(data).substring(0, 800));
+    window._ultimaData = data;
 
-      } else {
-        // Sigue PROCESANDO — reintentar en 5 segundos
-        setTimeout(consultarEstado, 5000);
-      }
-    })
-    .catch(function(err) {
-      // Error de red — reintentar
-      setTimeout(consultarEstado, 6000);
-    });
+    if (data.estado === 'LISTO') {
+      clearInterval(intervaloPasos);
+      document.getElementById('barra-progreso').style.width = '100%';
+      document.getElementById('paso-texto').textContent = '¡Listo! Cargando tu resultado...';
+      setTimeout(function() { renderizarResultado(data); }, 600);
+
+    } else if (data.estado === 'BLOQUEADO') {
+      clearInterval(intervaloPasos);
+      mostrarBloqueado(resultId);
+
+    } else {
+      setTimeout(consultarEstado, 5000);
+    }
+  };
+
+  script.onerror = function() {
+    delete window[callbackName];
+    try { document.body.removeChild(script); } catch(e) {}
+    setTimeout(consultarEstado, 6000);
+  };
+
+  script.src = APPS_SCRIPT_URL +
+    '?action=status' +
+    '&resultId=' + encodeURIComponent(resultId) +
+    '&callback=' + callbackName;
+
+  document.body.appendChild(script);
 }
 
 // ── CARGAR RESULTADO COMPLETO ──────────────────────────────
