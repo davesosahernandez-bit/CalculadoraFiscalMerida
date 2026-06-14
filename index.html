@@ -391,7 +391,7 @@ function consultarEstado() {
       // Cualquier otro estado (por seguridad)
       setTimeout(consultarEstado, 5000);
     }    
-
+  }
   script.onerror = function() {
     delete window[callbackName];
     try { document.body.removeChild(script); } catch(e) {}
