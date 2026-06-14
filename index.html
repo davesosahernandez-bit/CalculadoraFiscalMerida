@@ -380,14 +380,17 @@ function consultarEstado() {
       document.getElementById('paso-texto').textContent = '¡Listo! Cargando tu resultado...';
       setTimeout(function() { renderizarResultado(data); }, 600);
 
-    } else if (data.estado === 'BLOQUEADO') {
+    } else if (data.estado === 'BLOQUEADO_SALDO') {
       clearInterval(intervaloPasos);
       mostrarBloqueado(resultId);
-
-    } else {
+    } else if (data.estado === 'BLOQUEADO_PROCESANDO') {
+      // No detener el polling, solo esperar y reintentar
+      console.log('Procesando crédito, reintentando...');
       setTimeout(consultarEstado, 5000);
-    }
-  };
+    } else {
+      // Cualquier otro estado (por seguridad)
+      setTimeout(consultarEstado, 5000);
+    }    
 
   script.onerror = function() {
     delete window[callbackName];
