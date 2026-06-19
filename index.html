@@ -624,8 +624,8 @@ function mostrarError(msg) {
 function aviso(tipo, titulo, sub, conBotones) {
   var botones = conBotones
     ? '<div class="opciones-recarga">' +
-      '<button class="btn-recarga" onclick="alert(\'Próximamente\')">5 cálculos — $99 MXN</button>' +
-      '<button class="btn-recarga" onclick="alert(\'Próximamente\')">20 cálculos — $299 MXN</button>' +
+      '<button class="btn-recarga" onclick="iniciarPago(\'price_1TiSwxFV952RaBCC2cffZu1x\')">5 cálculos — $99 MXN</button>' +
+      '<button class="btn-recarga" onclick="iniciarPago(\'price_1TiSxLFV952RaBCCOHe8GkbJ\')">20 cálculos — $299 MXN</button>' +
       '</div>'
     : '';
   return '<div class="aviso ' + tipo + '">' +
