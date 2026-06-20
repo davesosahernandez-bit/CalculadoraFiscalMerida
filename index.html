@@ -543,7 +543,8 @@ var urlPDF = r.urlPDF || '';
   }
 
   // Botón WhatsApp
-  var urlActual = window.location.href;
+  // Usamos la URL del PDF directo de Drive. Si por alguna razón no existe, usamos la URL de la web.
+  var urlParaCompartir = r.urlPDF || window.location.href;
   var msgWA =
     '📊 *Estimación Fiscal FiscalCheck*\n' +
     'Municipio: ' + (r.municipio || '') + '\n' +
@@ -556,7 +557,7 @@ var urlPDF = r.urlPDF || '';
     'ISAI: ' + fmt(r.ISAI) + '\n' +
     'INSEJUPY: ' + fmt(r.derechosINSEJUPY) + '\n' +
     '*Total comprador: ' + fmt(r.totalComprador) + '*\n\n' +
-    '🔗 Ver detalle:\n' + urlActual;
+    '📄 *Descarga tu PDF aquí:*\n' + urlParaCompartir;
   document.getElementById('btn-wa').href =
     'https://wa.me/?text=' + encodeURIComponent(msgWA);
 
