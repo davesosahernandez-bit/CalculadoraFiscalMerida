@@ -420,7 +420,7 @@ function iniciarPago(priceId) {
     delete window[callbackName];
     try { document.body.removeChild(script); } catch(e) {}
 
-    if (data.url) {
+        if (data.url) {
       // Abrir Stripe en nueva pestaña
       window.open(data.url, '_blank');
       
@@ -428,7 +428,7 @@ function iniciarPago(priceId) {
       intentos = 0; // Resetear intentos para dar tiempo al pago
       setTimeout(consultarEstado, 5000);
     } else {
-      alert('Hubo un error al conectar con Stripe. Intenta de nuevo.');
+      alert('Error de Stripe: ' + (data.error || 'Desconocido'));
       document.getElementById('pago-pendiente').style.display = 'none';
     }
   };
