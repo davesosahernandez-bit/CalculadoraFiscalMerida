@@ -384,6 +384,9 @@ function consultarEstado() {
     } else if (data.estado === 'BLOQUEADO_SALDO') {
       clearInterval(intervaloPasos);
       mostrarBloqueado(resultId);
+      // ¡CLAVE AQUÍ! Seguir haciendo polling cada 5s para detectar el pago
+      setTimeout(consultarEstado, 5000);
+      
     } else if (data.estado === 'BLOQUEADO_PROCESANDO') {
       // No detener el polling, solo esperar y reintentar
       console.log('Procesando crédito, reintentando...');
