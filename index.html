@@ -7,11 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --navy: #0F2A23;        /* Verde Bosque Profundo - Tierra, Bienes Raíces */
-      --blue: #10B981;        /* Esmeralda - Tecnología, Crecimiento, Acción */
-      --snow: #F9FAFB;        /* Blanco Hueso - Limpieza */
-      --green: #34D399;       /* Verde Claro - Saldo Positivo */
-      --red: #F59E0B;         /* Ámbar - Alertas (más amable que el rojo) */
+      --navy: #0F2A23;
+      --blue: #10B981;
+      --snow: #F8FAFC;
+      --green: #34D399;
+      --red: #F59E0B;
       --text-main: #1E293B;
       --text-muted: #64748B;
       --border: #E2E8F0;
@@ -22,158 +22,297 @@
       font-family: 'Inter', sans-serif;
       background-color: var(--snow);
       color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── NAVBAR COMÚN ── */
+    /* ── ICONOS SVG ── */
+    .icon { width: 20px; height: 20px; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: currentColor; }
+
+    /* ── NAVBAR ── */
     .navbar {
-      background-color: var(--navy);
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
       padding: 16px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .logo-icon { width: 32px; height: 32px; background-color: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-    .logo-text { color: white; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-    .nav-links { display: flex; gap: 24px; align-items: center; }
-    .nav-link { color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 0.2s; }
-    .nav-link:hover { color: white; }
-    .btn-primary { background-color: var(--blue); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    .btn-primary:hover { background-color: #0ca678; }
+    .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
+    .logo-icon { width: 32px; height: 32px; background-color: var(--navy); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-text { color: var(--navy); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-link { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 0.2s; }
+    .nav-link:hover { color: var(--navy); }
+    .btn-primary { background-color: var(--navy); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.1s, background 0.2s; font-size: 14px; }
+    .btn-primary:hover { background-color: #1E3A32; transform: translateY(-1px); }
+    .btn-secondary { background-color: var(--blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; }
 
-    /* ── LANDNG PAGE ── */
-    .landing-hero {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 80px 32px;
+    /* ── LANDING PAGE ── */
+    .landing-container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    
+    .hero {
+      padding: 100px 0 80px;
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
       gap: 64px;
       align-items: center;
     }
-    .hero-text h1 { font-size: 48px; line-height: 1.1; color: var(--navy); margin-bottom: 24px; font-weight: 800; }
-    .hero-text p { font-size: 18px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
-    .hero-features { display: flex; gap: 24px; margin-top: 40px; }
-    .feature-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-main); font-weight: 500; }
-    .feature-icon { color: var(--blue); font-size: 18px; }
+    .hero-text h1 { font-size: 56px; line-height: 1.05; color: var(--navy); margin-bottom: 24px; font-weight: 800; letter-spacing: -1.5px; }
+    .hero-text p { font-size: 20px; color: var(--text-muted); margin-bottom: 40px; line-height: 1.6; }
+    .hero-badges { display: flex; gap: 24px; margin-top: 40px; color: var(--text-main); font-weight: 500; font-size: 14px; }
+    .hero-badge { display: flex; align-items: center; gap: 8px; }
+    .hero-badge .icon { color: var(--blue); }
 
     .auth-card {
       background: white;
       padding: 32px;
       border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.06);
       border: 1px solid var(--border);
     }
-    .auth-card h3 { font-size: 20px; color: var(--navy); margin-bottom: 8px; }
+    .auth-card h3 { font-size: 22px; color: var(--navy); margin-bottom: 8px; font-weight: 700; }
     .auth-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
-    .input-field { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-family: 'Inter', sans-serif; font-size: 15px; }
-    .btn-google { width: 100%; background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .divider { text-align: center; color: var(--text-muted); font-size: 12px; margin: 16px 0; position: relative; }
+    .input-group { margin-bottom: 16px; }
+    .input-field { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 15px; transition: border 0.2s; }
+    .input-field:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+    .btn-auth { width: 100%; padding: 14px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 15px; border: none; }
+    .btn-google { background: white; border: 1px solid var(--border); color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+    .divider { text-align: center; color: var(--text-muted); font-size: 12px; margin: 16px 0; position: relative; text-transform: uppercase; letter-spacing: 1px; }
     .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
     .divider::before { left: 0; } .divider::after { right: 0; }
 
-    /* ── WORKSTATION ── */
-    .workstation { display: none; max-width: 1200px; margin: 40px auto; padding: 0 32px; grid-template-columns: 250px 1fr; gap: 32px; }
-    .sidebar { background: white; padding: 24px; border-radius: 12px; border: 1px solid var(--border); height: fit-content; }
-    .sidebar-item { padding: 12px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 12px; }
-    .sidebar-item.active { background: rgba(16, 185, 129, 0.1); color: var(--blue); }
-    .sidebar-item:hover { background: var(--snow); }
+    /* ── SECCIONES LANDING ── */
+    .section { padding: 80px 0; border-top: 1px solid var(--border); }
+    .section-title { font-size: 36px; color: var(--navy); font-weight: 700; margin-bottom: 16px; text-align: center; }
+    .section-subtitle { font-size: 18px; color: var(--text-muted); text-align: center; max-width: 600px; margin: 0 auto 64px; }
     
-    .ws-content { background: white; padding: 32px; border-radius: 12px; border: 1px solid var(--border); min-height: 500px; }
-    .ws-header { margin-bottom: 24px; }
-    .ws-title { font-size: 24px; color: var(--navy); margin-bottom: 8px; }
-    
-    .balance-box { background: var(--navy); color: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
-    .balance-number { font-size: 32px; font-weight: 800; color: var(--green); }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+    .feature-card { background: white; padding: 32px; border-radius: 16px; border: 1px solid var(--border); transition: box-shadow 0.3s; }
+    .feature-card:hover { box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
+    .feature-icon-box { width: 48px; height: 48px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--blue); margin-bottom: 24px; }
+    .feature-card h4 { font-size: 18px; color: var(--navy); margin-bottom: 12px; }
+    .feature-card p { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
 
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 900px; margin: 0 auto; }
+    .pricing-card { background: white; padding: 40px 32px; border-radius: 16px; border: 1px solid var(--border); position: relative; }
+    .pricing-card.popular { border: 2px solid var(--blue); box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15); }
+    .pricing-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--blue); color: white; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .pricing-card h4 { font-size: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+    .pricing-card .price { font-size: 40px; color: var(--navy); font-weight: 800; margin-bottom: 24px; }
+    .pricing-card .price span { font-size: 16px; font-weight: 500; color: var(--text-muted); }
+    .pricing-card ul { list-style: none; margin-bottom: 32px; }
+    .pricing-card ul li { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--text-main); margin-bottom: 12px; }
+    .pricing-card ul li .icon { color: var(--blue); width: 16px; height: 16px; }
+
+    .footer { background: var(--navy); color: white; padding: 40px 32px; text-align: center; margin-top: 80px; }
+    .footer p { font-size: 13px; color: #94a3b8; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+    /* ── WORKSTATION ── */
+    .workstation { display: none; max-width: 1200px; margin: 40px auto; padding: 0 32px; grid-template-columns: 240px 1fr; gap: 32px; }
+    .sidebar { background: white; padding: 24px 16px; border-radius: 16px; border: 1px solid var(--border); height: fit-content; position: sticky; top: 100px; }
+    .sidebar-item { padding: 12px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 12px; transition: all 0.2s; }
+    .sidebar-item.active { background: var(--navy); color: white; }
+    .sidebar-item:hover:not(.active) { background: var(--snow); color: var(--navy); }
+    .sidebar-divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .saldo-sidebar { text-align: center; padding: 16px; background: var(--snow); border-radius: 12px; margin-bottom: 16px; }
+    .saldo-sidebar .num { font-size: 28px; font-weight: 800; color: var(--blue); }
+    .saldo-sidebar .txt { font-size: 12px; color: var(--text-muted); }
+
+    .ws-content { background: white; padding: 40px; border-radius: 16px; border: 1px solid var(--border); min-height: 600px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .ws-header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; }
+    .ws-title { font-size: 28px; color: var(--navy); font-weight: 700; }
+    
+    /* ── RESPONSIVE (MÓVIL) ── */
+    @media (max-width: 768px) {
+      .hero, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .hero { padding: 40px 0; text-align: center; }
+      .hero-text h1 { font-size: 36px; }
+      .hero-badges { justify-content: center; }
+      .workstation { grid-template-columns: 1fr; padding: 0 16px; margin-top: 20px; }
+      .sidebar { display: none; /* Oculto en móvil, usamos bottom-nav */ }
+      .ws-content { padding: 24px 16px 100px 16px; } /* Espacio para bottom nav */
+      
+      /* Bottom Navigation para móvil */
+      .bottom-nav { display: flex !important; position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border); justify-content: space-around; padding: 12px 0; z-index: 100; }
+      .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 11px; cursor: pointer; }
+      .bottom-nav-item.active { color: var(--blue); }
+    }
+    .bottom-nav { display: none; }
   </style>
 </head>
 <body>
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="logo-container" onclick="showView('landing')">
+    <a class="logo-container" onclick="showView('landing')">
       <div class="logo-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="4 12 10 18 20 6"></polyline>
-        </svg>
+        <!-- Icono Check Arquitectónico -->
+        <svg class="icon" style="color: var(--blue); stroke-width: 3;" viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg>
       </div>
       <span class="logo-text">FiscalCheck</span>
-    </div>
+    </a>
     <div class="nav-links">
-      <span class="nav-link" onclick="showView('landing')">Precios</span>
+      <span class="nav-link" onclick="document.getElementById('precios').scrollIntoView({behavior: 'smooth'})">Precios</span>
       <button class="btn-primary" onclick="showView('workstation')">Iniciar Sesión</button>
     </div>
   </nav>
 
-  <!-- LANDING VIEW -->
-  <div id="view-landing" class="landing-hero">
-    <div class="hero-text">
-      <h1>Estimaciones fiscales inmediatas para tus operaciones inmobiliarias.</h1>
-      <p>Calcula ISR, Cedular, ISAI e INSEJUPY en menos de 2 minutos. Ayuda a tus clientes a conocer sus costos antes de la notaría y acelera tus cierres en la Zona Metropolitana de Mérida.</p>
-      
-      <div class="hero-features">
-        <div class="feature-item">🏠 <span>Bienes Raíces</span></div>
-        <div class="feature-item">⚖️ <span>Legalidad</span></div>
-        <div class="feature-item">⚡ <span>Rapidez</span></div>
+  <!-- ─────────── LANDING VIEW ─────────── -->
+  <div id="view-landing" class="landing-container">
+    
+    <!-- Sección 1: Hero -->
+    <div class="hero">
+      <div class="hero-text">
+        <h1>Estimaciones fiscales inmediatas para tus operaciones.</h1>
+        <p>Calcula ISR, Cedular, ISAI e INSEJUPY en menos de 2 minutos. Ayuda a tus clientes a conocer sus costos antes de la notaría y acelera tus cierres en la Zona Metropolitana de Mérida.</p>
+        <div class="hero-badges">
+          <div class="hero-badge"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Bienes Raíces</div>
+          <div class="hero-badge"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Legalidad</div>
+          <div class="hero-badge"><svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Rapidez</div>
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <h3>Crea tu cuenta gratis</h3>
+        <p>Te regalamos 5 cálculos para que pruebes la herramienta.</p>
+        
+        <button class="btn-auth btn-google">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continuar con Google
+        </button>
+        
+        <div class="divider">O con tu correo</div>
+        
+        <div class="input-group">
+          <input type="email" class="input-field" placeholder="agente@inmobiliaria.com">
+        </div>
+        <button class="btn-auth btn-secondary">Enviar código de acceso</button>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 16px; text-align: center;">Sin contraseñas. Te enviaremos un código de un solo uso.</p>
       </div>
     </div>
 
-    <div class="auth-card">
-      <h3>Crea tu cuenta gratis</h3>
-      <p>Te regalamos 5 cálculos para que pruebes la herramienta.</p>
+    <!-- Sección 2: Transparencia / Valor -->
+    <div class="section">
+      <h2 class="section-title">Diseñado para agentes que cierran más rápido</h2>
+      <p class="section-subtitle">Olvídate de las hojas de cálculo complejas. Centraliza la estimación fiscal de tus operaciones inmobiliarias en una sola plataforma.</p>
       
-      <button class="btn-google">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        Continuar con Google
-      </button>
-      
-      <div class="divider">O</div>
-      
-      <input type="email" class="input-field" placeholder="tu@correo.com">
-      <button class="btn-primary" style="width: 100%; padding: 12px;">Enviar código de acceso</button>
-      <p style="font-size: 11px; color: var(--text-muted); margin-top: 16px; text-align: center;">Sin contraseñas. Te enviaremos un código de un solo uso.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
+          <h4>Cobertura Inmobiliaria Clave</h4>
+          <p>Optimizado para los municipios con mayor movimiento en Yucatán: Mérida, Kanasín, Conkal, Umán, Progreso, Hunucmá y Ucú.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+          <h4>Motor Confiable</h4>
+          <p>Algoritmos basados en la legislación fiscal vigente 2026. Tú pones los datos, nosotros hacamos la matemática compleja.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
+          <h4>Presencia Profesional</h4>
+          <p>Entrega a tus clientes un reporte en PDF limpio y claro, listo para compartir por WhatsApp y generar confianza en el pre-cierre.</p>
+        </div>
+      </div>
     </div>
+
+    <!-- Sección 3: Precios -->
+    <div class="section" id="precios">
+      <h2 class="section-title">Precios simples. Sin sorpresas.</h2>
+      <p class="section-subtitle">Paga solo cuando lo necesites. Sin mensualidades, sin contratos forzosos.</p>
+      
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h4>Prueba Gratis</h4>
+          <div class="price">$0 <span>/ 5 cálculos</span></div>
+          <ul>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 5 cálculos iniciales</li>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></> Soporte por correo</li>
+          </ul>
+          <button class="btn-primary" style="width: 100%;" onclick="showView('workstation')">Registrarme</button>
+        </div>
+        
+        <div class="pricing-card popular">
+          <div class="pricing-badge">Más Popular</div>
+          <h4>Bundle 5</h4>
+          <div class="price">$99 <span>MXN</span></div>
+          <ul>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 5 cálculos adicionales</li>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Historial de operaciones</li>
+          </ul>
+          <button class="btn-secondary" style="width: 100%;">Comprar ahora</button>
+        </div>
+        
+        <div class="pricing-card">
+          <h4>Bundle 20</h4>
+          <div class="price">$299 <span>MXN</span></div>
+          <ul>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 20 cálculos adicionales</li>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Soporte prioritario</li>
+          </ul>
+          <button class="btn-primary" style="width: 100%;">Comprar ahora</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>FiscalCheck es una herramienta de estimación orientativa de pre-cierre. El cálculo definitivo y vinculante corresponde exclusivamente al Notario Público.</p>
+    </footer>
   </div>
 
-  <!-- WORKSTATION VIEW -->
+  <!-- ─────────── WORKSTATION VIEW ─────────── -->
   <div id="view-workstation" class="workstation">
-    <!-- Sidebar -->
+    
+    <!-- Sidebar (Desktop) -->
     <div class="sidebar">
-      <div class="sidebar-item active">🏠 Inicio</div>
-      <div class="sidebar-item">📊 Historial</div>
-      <div class="sidebar-item">💳 Mi Saldo</div>
-      <div class="sidebar-item">⚙️ Soporte</div>
+      <div class="sidebar-item active"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg> Inicio</div>
+      <div class="sidebar-item"><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Historial</div>
+      <div class="sidebar-item"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg> Pagos</div>
+      <div class="sidebar-divider"></div>
+      
+      <div class="saldo-sidebar">
+        <div class="num">5</div>
+        <div class="txt">Créditos disponibles</div>
+      </div>
+      <button class="btn-secondary" style="width: 100%; padding: 10px; font-size: 14px;">Recargar Saldo</button>
     </div>
 
-    <!-- Main Content -->
+    <!-- Contenido Principal -->
     <div class="ws-content">
       <div class="ws-header">
-        <h2 class="ws-title">Tu Estación de Trabajo</h2>
-        <p style="color: var(--text-muted);">Gestiona tus operaciones y cálculos fiscales.</p>
+        <h2 class="ws-title">Bienvenido a tu Workstation</h2>
+        <button class="btn-primary">Cerrar Sesión</button>
       </div>
-
-      <div class="balance-box">
-        <div>
-          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 4px;">Créditos disponibles</p>
-          <div class="balance-number">5</div>
-        </div>
-        <button class="btn-primary">Recargar Saldo</button>
-      </div>
-
-      <button class="btn-primary" style="width: 100%; padding: 16px; font-size: 16px; background: var(--navy);">➕ Iniciar Nueva Operación</button>
+      
+      <p style="color: var(--text-muted); margin-bottom: 32px;">Desde aquí puedes iniciar nuevos cálculos, ver tu historial y gestionar tus créditos.</p>
+      
+      <button class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; background: var(--navy); display: flex; align-items: center; justify-content: center; gap: 12px;">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Iniciar Nueva Operación
+      </button>
     </div>
+
+    <!-- Bottom Nav (Móvil) -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-item active"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg> Inicio</div>
+      <div class="bottom-nav-item"><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Historial</div>
+      <div class="bottom-nav-item"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg> Saldo</div>
+    </nav>
   </div>
 
   <script>
-    // Lógica básica de cambio de vistas
     function showView(viewName) {
-      document.getElementById('view-landing').style.display = viewName === 'landing' ? 'grid' : 'none';
+      document.getElementById('view-landing').style.display = viewName === 'landing' ? 'block' : 'none';
       document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
+      window.scrollTo(0, 0);
     }
-
-    // Iniciar en la Landing
     showView('landing');
   </script>
 </body>
