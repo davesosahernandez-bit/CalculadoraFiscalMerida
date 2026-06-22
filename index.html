@@ -30,9 +30,7 @@
 
     /* ── NAVBAR ── */
     .navbar {
-      background-color: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      background-color: var(--navy);
       padding: 16px 32px;
       display: flex;
       justify-content: space-between;
@@ -40,16 +38,17 @@
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
     .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
-    .logo-icon { width: 32px; height: 32px; background-color: var(--navy); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-    .logo-text { color: var(--navy); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .logo-icon { width: 32px; height: 32px; background-color: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-text { color: white; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
     .nav-links { display: flex; gap: 32px; align-items: center; }
-    .nav-link { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 0.2s; }
-    .nav-link:hover { color: var(--navy); }
-    .btn-primary { background-color: var(--navy); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.1s, background 0.2s; font-size: 14px; }
-    .btn-primary:hover { background-color: #1E3A32; transform: translateY(-1px); }
-    .btn-secondary { background-color: var(--blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; }
+    .nav-link { color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 0.2s; }
+    .nav-link:hover { color: white; }
+    .btn-primary { background-color: var(--blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.1s, background 0.2s; font-size: 14px; }
+    .btn-primary:hover { background-color: #0ca678; transform: translateY(-1px); }
+    .btn-secondary { background-color: white; color: var(--navy); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; }
 
     /* ── LANDING PAGE ── */
     .landing-container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
@@ -81,9 +80,11 @@
     .input-field:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
     .btn-auth { width: 100%; padding: 14px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 15px; border: none; }
     .btn-google { background: white; border: 1px solid var(--border); color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
-    .divider { text-align: center; color: var(--text-muted); font-size: 12px; margin: 16px 0; position: relative; text-transform: uppercase; letter-spacing: 1px; }
-    .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
-    .divider::before { left: 0; } .divider::after { right: 0; }
+    
+    /* Divisor arreglado */
+    .divider { text-align: center; color: var(--text-muted); font-size: 12px; margin: 20px 0; position: relative; text-transform: uppercase; letter-spacing: 1px; z-index: 1; }
+    .divider span { background: white; padding: 0 12px; position: relative; z-index: 2; }
+    .divider::before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: var(--border); z-index: 0; }
 
     /* ── SECCIONES LANDING ── */
     .section { padding: 80px 0; border-top: 1px solid var(--border); }
@@ -98,15 +99,16 @@
     .feature-card p { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
 
     .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 900px; margin: 0 auto; }
-    .pricing-card { background: white; padding: 40px 32px; border-radius: 16px; border: 1px solid var(--border); position: relative; }
+    .pricing-card { background: white; padding: 40px 32px; border-radius: 16px; border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; }
     .pricing-card.popular { border: 2px solid var(--blue); box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15); }
     .pricing-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--blue); color: white; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; }
     .pricing-card h4 { font-size: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
     .pricing-card .price { font-size: 40px; color: var(--navy); font-weight: 800; margin-bottom: 24px; }
     .pricing-card .price span { font-size: 16px; font-weight: 500; color: var(--text-muted); }
-    .pricing-card ul { list-style: none; margin-bottom: 32px; }
+    .pricing-card ul { list-style: none; margin-bottom: 32px; flex-grow: 1; }
     .pricing-card ul li { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--text-main); margin-bottom: 12px; }
     .pricing-card ul li .icon { color: var(--blue); width: 16px; height: 16px; }
+    .pricing-note { font-size: 12px; color: var(--blue); font-weight: 600; margin-bottom: 16px; text-align: center; }
 
     .footer { background: var(--navy); color: white; padding: 40px 32px; text-align: center; margin-top: 80px; }
     .footer p { font-size: 13px; color: #94a3b8; max-width: 600px; margin: 0 auto; line-height: 1.6; }
@@ -133,11 +135,10 @@
       .hero-text h1 { font-size: 36px; }
       .hero-badges { justify-content: center; }
       .workstation { grid-template-columns: 1fr; padding: 0 16px; margin-top: 20px; }
-      .sidebar { display: none; /* Oculto en móvil, usamos bottom-nav */ }
-      .ws-content { padding: 24px 16px 100px 16px; } /* Espacio para bottom nav */
+      .sidebar { display: none; }
+      .ws-content { padding: 24px 16px 100px 16px; }
       
-      /* Bottom Navigation para móvil */
-      .bottom-nav { display: flex !important; position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border); justify-content: space-around; padding: 12px 0; z-index: 100; }
+      .bottom-nav { display: flex !important; position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border); justify-content: space-around; padding: 12px 0; z-index: 100; box-shadow: 0 -4px 6px rgba(0,0,0,0.05); }
       .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 11px; cursor: pointer; }
       .bottom-nav-item.active { color: var(--blue); }
     }
@@ -150,14 +151,12 @@
   <nav class="navbar">
     <a class="logo-container" onclick="showView('landing')">
       <div class="logo-icon">
-        <!-- Icono Check Arquitectónico -->
         <svg class="icon" style="color: var(--blue); stroke-width: 3;" viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg>
       </div>
       <span class="logo-text">FiscalCheck</span>
     </a>
     <div class="nav-links">
-      <span class="nav-link" onclick="document.getElementById('precios').scrollIntoView({behavior: 'smooth'})">Precios</span>
-      <button class="btn-primary" onclick="showView('workstation')">Iniciar Sesión</button>
+      <button id="nav-auth-btn" class="btn-primary" onclick="handleNavAuth()">Iniciar Sesión</button>
     </div>
   </nav>
 
@@ -170,9 +169,9 @@
         <h1>Estimaciones fiscales inmediatas para tus operaciones.</h1>
         <p>Calcula ISR, Cedular, ISAI e INSEJUPY en menos de 2 minutos. Ayuda a tus clientes a conocer sus costos antes de la notaría y acelera tus cierres en la Zona Metropolitana de Mérida.</p>
         <div class="hero-badges">
-          <div class="hero-badge"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Bienes Raíces</div>
-          <div class="hero-badge"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Legalidad</div>
           <div class="hero-badge"><svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Rapidez</div>
+          <div class="hero-badge"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Simplicidad</div>
+          <div class="hero-badge"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> Transparencia</div>
         </div>
       </div>
 
@@ -185,12 +184,12 @@
           Continuar con Google
         </button>
         
-        <div class="divider">O con tu correo</div>
+        <div class="divider"><span>O con tu correo</span></div>
         
         <div class="input-group">
           <input type="email" class="input-field" placeholder="agente@inmobiliaria.com">
         </div>
-        <button class="btn-auth btn-secondary">Enviar código de acceso</button>
+        <button class="btn-auth btn-primary">Enviar código de acceso</button>
         <p style="font-size: 11px; color: var(--text-muted); margin-top: 16px; text-align: center;">Sin contraseñas. Te enviaremos un código de un solo uso.</p>
       </div>
     </div>
@@ -203,24 +202,24 @@
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
-          <h4>Cobertura Inmobiliaria Clave</h4>
-          <p>Optimizado para los municipios con mayor movimiento en Yucatán: Mérida, Kanasín, Conkal, Umán, Progreso, Hunucmá y Ucú.</p>
+          <h4>Cobertura Exclusiva</h4>
+          <p>Calcula impuestos solo para los municipios con mayor movimiento inmobiliario en Yucatán: Mérida, Kanasín, Conkal, Umán, Progreso, Hunucmá y Ucú.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
           <h4>Motor Confiable</h4>
-          <p>Algoritmos basados en la legislación fiscal vigente 2026. Tú pones los datos, nosotros hacamos la matemática compleja.</p>
+          <p>Algoritmos basados en la legislación fiscal vigente 2026. Tú pones los datos, nosotros hacemos la matemática compleja.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
           <h4>Presencia Profesional</h4>
-          <p>Entrega a tus clientes un reporte en PDF limpio y claro, listo para compartir por WhatsApp y generar confianza en el pre-cierre.</p>
+          <p>Obtén un reporte en PDF limpio y claro, listo para descargar y compartir por WhatsApp con tus clientes.</p>
         </div>
       </div>
     </div>
 
     <!-- Sección 3: Precios -->
-    <div class="section" id="precios">
+    <div class="section">
       <h2 class="section-title">Precios simples. Sin sorpresas.</h2>
       <p class="section-subtitle">Paga solo cuando lo necesites. Sin mensualidades, sin contratos forzosos.</p>
       
@@ -231,9 +230,9 @@
           <ul>
             <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 5 cálculos iniciales</li>
             <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></> Soporte por correo</li>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Historial de operaciones</li>
           </ul>
-          <button class="btn-primary" style="width: 100%;" onclick="showView('workstation')">Registrarme</button>
+          <button class="btn-primary" style="width: 100%; margin-top: auto;" onclick="showView('workstation')">Registrarme</button>
         </div>
         
         <div class="pricing-card popular">
@@ -245,18 +244,19 @@
             <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
             <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Historial de operaciones</li>
           </ul>
-          <button class="btn-secondary" style="width: 100%;">Comprar ahora</button>
+          <button class="btn-primary" style="width: 100%; margin-top: auto;">Comprar ahora</button>
         </div>
         
         <div class="pricing-card">
           <h4>Bundle 20</h4>
           <div class="price">$299 <span>MXN</span></div>
+          <p class="pricing-note">Asegúrate de no quedarte sin cálculos en tus mejores meses.</p>
           <ul>
             <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 20 cálculos adicionales</li>
             <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Soporte prioritario</li>
+            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Historial de operaciones</li>
           </ul>
-          <button class="btn-primary" style="width: 100%;">Comprar ahora</button>
+          <button class="btn-primary" style="width: 100%; margin-top: auto;">Comprar ahora</button>
         </div>
       </div>
     </div>
@@ -274,26 +274,25 @@
     <div class="sidebar">
       <div class="sidebar-item active"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg> Inicio</div>
       <div class="sidebar-item"><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Historial</div>
-      <div class="sidebar-item"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg> Pagos</div>
+      <div class="sidebar-item"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Soporte</div>
       <div class="sidebar-divider"></div>
       
       <div class="saldo-sidebar">
         <div class="num">5</div>
         <div class="txt">Créditos disponibles</div>
       </div>
-      <button class="btn-secondary" style="width: 100%; padding: 10px; font-size: 14px;">Recargar Saldo</button>
+      <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 14px;">Recargar Saldo</button>
     </div>
 
     <!-- Contenido Principal -->
     <div class="ws-content">
       <div class="ws-header">
         <h2 class="ws-title">Bienvenido a tu Workstation</h2>
-        <button class="btn-primary">Cerrar Sesión</button>
       </div>
       
       <p style="color: var(--text-muted); margin-bottom: 32px;">Desde aquí puedes iniciar nuevos cálculos, ver tu historial y gestionar tus créditos.</p>
       
-      <button class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; background: var(--navy); display: flex; align-items: center; justify-content: center; gap: 12px;">
+      <button class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;">
         <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         Iniciar Nueva Operación
       </button>
@@ -311,8 +310,27 @@
     function showView(viewName) {
       document.getElementById('view-landing').style.display = viewName === 'landing' ? 'block' : 'none';
       document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
+      
+      // Cambiar botón de navbar según la vista
+      const btn = document.getElementById('nav-auth-btn');
+      if (viewName === 'workstation') {
+        btn.innerText = 'Cerrar Sesión';
+      } else {
+        btn.innerText = 'Iniciar Sesión';
+      }
+      
       window.scrollTo(0, 0);
     }
+
+    function handleNavAuth() {
+      const btn = document.getElementById('nav-auth-btn');
+      if (btn.innerText === 'Cerrar Sesión') {
+        showView('landing');
+      } else {
+        showView('workstation');
+      }
+    }
+
     showView('landing');
   </script>
 </body>
