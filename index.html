@@ -3,650 +3,178 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FiscalCheck — Resultado</title>
+  <title>FiscalCheck - Estimaciones Fiscales Inmobiliarias</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --navy: #0F2A23;        /* Verde Bosque Profundo - Tierra, Bienes Raíces */
+      --blue: #10B981;        /* Esmeralda - Tecnología, Crecimiento, Acción */
+      --snow: #F9FAFB;        /* Blanco Hueso - Limpieza */
+      --green: #34D399;       /* Verde Claro - Saldo Positivo */
+      --red: #F59E0B;         /* Ámbar - Alertas (más amable que el rojo) */
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #fafafa;
-      color: #1a1a2e;
-      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--snow);
+      color: var(--text-main);
     }
-    .container {
-      max-width: 680px;
+
+    /* ── NAVBAR COMÚN ── */
+    .navbar {
+      background-color: var(--navy);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .logo-icon { width: 32px; height: 32px; background-color: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-text { color: white; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-link { color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 0.2s; }
+    .nav-link:hover { color: white; }
+    .btn-primary { background-color: var(--blue); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-primary:hover { background-color: #0ca678; }
+
+    /* ── LANDNG PAGE ── */
+    .landing-hero {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 32px 24px;
-    }
-
-    /* ── ESPERA ── */
-    #vista-espera { text-align: center; padding-top: 60px; }
-    .logo {
-      font-size: 26px;
-      font-weight: 700;
-      color: #4a86e8;
-      margin-bottom: 40px;
-    }
-    .logo span {
-      background: #4a86e8;
-      color: #fff;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 13px;
-      vertical-align: middle;
-      margin-left: 6px;
-    }
-    .spinner {
-      width: 60px; height: 60px;
-      border: 4px solid #e2e8f0;
-      border-top: 4px solid #4a86e8;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 28px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .titulo-espera {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #2d3748;
-    }
-    .paso {
-      font-size: 15px;
-      color: #4a86e8;
-      margin-bottom: 28px;
-      min-height: 24px;
-      transition: opacity 0.4s;
-    }
-    .barra-cont {
-      background: #e2e8f0;
-      border-radius: 99px;
-      height: 7px;
-      width: 100%;
-      margin-bottom: 32px;
-    }
-    .barra {
-      background: #4a86e8;
-      height: 7px;
-      border-radius: 99px;
-      width: 5%;
-      transition: width 1s ease;
-    }
-    .nota-espera {
-      font-size: 13px;
-      color: #a0aec0;
-      line-height: 1.6;
-    }
-
-    /* ── RESULTADO ── */
-    #vista-resultado { display: none; }
-    .logo-resultado {
-      font-size: 22px;
-      font-weight: 700;
-      color: #4a86e8;
-      border-bottom: 2px solid #4a86e8;
-      padding-bottom: 10px;
-      margin-bottom: 14px;
-    }
-    .meta {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 16px;
-    }
-    .aviso {
-      padding: 14px 16px;
-      border-radius: 8px;
-      margin: 16px 0;
-      font-size: 13px;
-    }
-    .aviso.info {
-      background: #ebf8ff;
-      border-left: 4px solid #4a86e8;
-      color: #2c5282;
-    }
-    .aviso.urgente {
-      background: #fff5f5;
-      border-left: 4px solid #e53e3e;
-      color: #c53030;
-    }
-    .opciones-recarga {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-    .btn-recarga {
-      background: #4a86e8;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .acciones {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-    .btn-pdf {
-      flex: 1;
-      min-width: 200px;
-      display: flex;
+      padding: 80px 32px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 64px;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: #2d3748;
-      color: #fff;
-      padding: 14px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 600;
     }
-    .btn-pdf:hover { background: #1a202c; }
-    .btn-wa {
-      flex: 1;
-      min-width: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: #25D366;
-      color: #fff;
-      padding: 14px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .btn-wa:hover { background: #128C7E; }
-    h2 {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #2d3748;
-      margin: 24px 0 8px;
-    }
-    .fila {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #f0f0f0;
-      font-size: 14px;
-    }
-    .label { color: #555; }
-    .valor { font-weight: 600; }
-    .total {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      font-size: 18px;
-      font-weight: 700;
-      color: #e53e3e;
-      border-top: 2px solid #e53e3e;
-      margin-top: 4px;
-    }
-    .nota-isai {
-      background: #fffaf0;
-      border-left: 4px solid #ed8936;
-      padding: 8px 12px;
-      font-size: 12px;
-      color: #7b341e;
-      margin: 6px 0;
-    }
-    .advertencia {
-      font-size: 12px;
-      color: #744210;
-      background: #fffaf0;
-      border-left: 3px solid #ed8936;
-      padding: 8px 12px;
-      margin: 4px 0;
-    }
-    .disclaimer {
-      font-size: 11px;
-      color: #999;
-      margin-top: 24px;
-      padding: 12px;
-      background: #f9f9f9;
-      border-radius: 6px;
-      line-height: 1.6;
-    }
+    .hero-text h1 { font-size: 48px; line-height: 1.1; color: var(--navy); margin-bottom: 24px; font-weight: 800; }
+    .hero-text p { font-size: 18px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
+    .hero-features { display: flex; gap: 24px; margin-top: 40px; }
+    .feature-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-main); font-weight: 500; }
+    .feature-icon { color: var(--blue); font-size: 18px; }
 
-    /* ── BLOQUEADO ── */
-    #vista-bloqueado {
-      display: none;
-      text-align: center;
-      padding-top: 80px;
+    .auth-card {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
     }
-    .icono-lock { font-size: 52px; margin-bottom: 20px; }
-    .titulo-bloqueado {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .sub-bloqueado {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 24px;
-      line-height: 1.6;
-    }
+    .auth-card h3 { font-size: 20px; color: var(--navy); margin-bottom: 8px; }
+    .auth-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+    .input-field { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-family: 'Inter', sans-serif; font-size: 15px; }
+    .btn-google { width: 100%; background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .divider { text-align: center; color: var(--text-muted); font-size: 12px; margin: 16px 0; position: relative; }
+    .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
+    .divider::before { left: 0; } .divider::after { right: 0; }
 
-    /* ── ERROR ── */
-    #vista-error {
-      display: none;
-      text-align: center;
-      padding-top: 80px;
-    }
+    /* ── WORKSTATION ── */
+    .workstation { display: none; max-width: 1200px; margin: 40px auto; padding: 0 32px; grid-template-columns: 250px 1fr; gap: 32px; }
+    .sidebar { background: white; padding: 24px; border-radius: 12px; border: 1px solid var(--border); height: fit-content; }
+    .sidebar-item { padding: 12px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 12px; }
+    .sidebar-item.active { background: rgba(16, 185, 129, 0.1); color: var(--blue); }
+    .sidebar-item:hover { background: var(--snow); }
+    
+    .ws-content { background: white; padding: 32px; border-radius: 12px; border: 1px solid var(--border); min-height: 500px; }
+    .ws-header { margin-bottom: 24px; }
+    .ws-title { font-size: 24px; color: var(--navy); margin-bottom: 8px; }
+    
+    .balance-box { background: var(--navy); color: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .balance-number { font-size: 32px; font-weight: 800; color: var(--green); }
+
   </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- VISTA: ESPERA -->
-  <div id="vista-espera">
-    <div class="logo">FiscalCheck <span>v2026.1</span></div>
-    <div class="spinner"></div>
-    <div class="titulo-espera">Calculando tu estimación fiscal</div>
-    <div class="paso" id="paso-texto">Iniciando cálculo...</div>
-    <div class="barra-cont">
-      <div class="barra" id="barra-progreso"></div>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo-container" onclick="showView('landing')">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 12 10 18 20 6"></polyline>
+        </svg>
+      </div>
+      <span class="logo-text">FiscalCheck</span>
     </div>
-    <div class="nota-espera">
-      Esto tarda menos de 2 minutos.<br>No cierres esta página.
+    <div class="nav-links">
+      <span class="nav-link" onclick="showView('landing')">Precios</span>
+      <button class="btn-primary" onclick="showView('workstation')">Iniciar Sesión</button>
     </div>
-  </div>
+  </nav>
 
-  <!-- VISTA: RESULTADO -->
-  <div id="vista-resultado">
-    <div class="logo-resultado">
-      FiscalCheck <span style="background:#4a86e8;color:#fff;padding:2px 8px;
-      border-radius:12px;font-size:11px;vertical-align:middle;margin-left:6px;">
-      v2026.1</span>
-    </div>
-    <div class="meta" id="meta-resultado"></div>
-    <div id="aviso-saldo"></div>
-    <div class="acciones">
-      <a id="btn-pdf" href="#" target="_blank" class="btn-pdf">⬇️ Descargar PDF</a>
-      <a id="btn-wa"  href="#" target="_blank" class="btn-wa">💬 Compartir por WhatsApp</a>
-    </div>
-    <div id="cuerpo-resultado"></div>
-    <div class="disclaimer" id="disclaimer-texto"></div>
-  </div>
-
-    <!-- VISTA: BLOQUEADO -->
-  <div id="vista-bloqueado">
-    <div class="icono-lock">🔒</div>
-    <div class="titulo-bloqueado">Tu cálculo está listo.<br>Desbloquéalo recargando.</div>
-    <div class="sub-bloqueado">
-      Tu operación fue procesada exitosamente.<br>
-      Recarga créditos para acceder al resultado completo.
-    </div>
-    <div class="opciones-recarga" style="justify-content:center;">
-      <button class="btn-recarga" onclick="iniciarPago('price_1TiSwxFV952RaBCC2cffZu1x')">5 cálculos — $99 MXN</button>
-      <button class="btn-recarga" onclick="iniciarPago('price_1TiSxLFV952RaBCCOHe8GkbJ')">20 cálculos — $299 MXN</button>
-    </div>
-    <p style="font-size:12px;color:#4a86e8;margin-top:16px;display:none;" id="pago-pendiente">
-      ⏳ Pestaña de pago abierta. Esta pantalla se actualizará automáticamente al completar el pago.
-    </p>
-    <p style="font-size:11px;color:#aaa;margin-top:32px;" id="id-bloqueado"></p>
-  </div>
-
-  <!-- VISTA: ERROR -->
-  <div id="vista-error">
-    <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
-    <div style="font-size:20px;font-weight:600;margin-bottom:12px;">
-      No se pudo cargar el resultado</div>
-    <div style="font-size:14px;color:#666;" id="error-texto"></div>
-  </div>
-
-</div>
-
-<script>
-// ── CONFIGURACIÓN ──────────────────────────────────────────
-// URL del Web App de Apps Script — actualizar si cambia el deployment
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQaOPVkYTYvLOq4Qgp_0fawAGUQJ5cYY0F3TyOPzo0MAtMuu0MLlzzf3MTV5Rl8p0N/exec';
-
-// ── PASOS DE PROGRESO ──────────────────────────────────────
-var PASOS = [
-  'Verificando datos del formulario...',
-  'Consultando INPC en Banxico...',
-  'Obteniendo valor UDI...',
-  'Calculando ISR Federal Art. 126...',
-  'Calculando Impuesto Cedular Yucatán...',
-  'Calculando ISAI y derechos INSEJUPY...',
-  'Generando estimación fiscal...',
-  'Preparando tu resultado...'
-];
-
-// ── ESTADO GLOBAL ──────────────────────────────────────────
-var resultId   = '';
-var pasoActual = 0;
-var intervaloPasos;
-var intentos   = 0;
-var MAX_INTENTOS = 24; // 24 × 5s = 2 minutos máximo
-
-// ── INICIALIZAR ────────────────────────────────────────────
-window.onload = function() {
-  var params = new URLSearchParams(window.location.search);
-  resultId   = params.get('resultId') || '';
-
-  if (!resultId) {
-    mostrarError('Parámetro resultId no encontrado en la URL.');
-    return;
-  }
-
-  // Iniciar animación de pasos
-  intervaloPasos = setInterval(function() {
-    if (pasoActual < PASOS.length - 1) pasoActual++;
-    actualizarPaso();
-  }, 7000);
-
-  // Iniciar polling
-  setTimeout(consultarEstado, 3000);
-};
-
-function actualizarPaso() {
-  document.getElementById('paso-texto').textContent = PASOS[pasoActual];
-  var pct = 5 + (pasoActual / (PASOS.length - 1)) * 85;
-  document.getElementById('barra-progreso').style.width = Math.min(90, pct) + '%';
-}
-
-// ── POLLING ────────────────────────────────────────────────
-function consultarEstado() {
-  intentos++;
-
-  if (intentos > MAX_INTENTOS) {
-    mostrarError(
-      'El cálculo está tomando más tiempo de lo esperado. ' +
-      'Recarga la página en unos minutos.'
-    );
-    return;
-  }
-
-  var callbackName = 'cb_status_' + Date.now();
-  var script       = document.createElement('script');
-
-  window[callbackName] = function(data) {
-    delete window[callbackName];
-    try { document.body.removeChild(script); } catch(e) {}
-
-    console.log('JSON recibido:', JSON.stringify(data).substring(0, 800));
-    window._ultimaData = data;
-
-    if (data.estado === 'LISTO') {
-      clearInterval(intervaloPasos);
-      document.getElementById('barra-progreso').style.width = '100%';
-      document.getElementById('paso-texto').textContent = '¡Listo! Cargando tu resultado...';
-      setTimeout(function() { renderizarResultado(data); }, 600);
-
-    } else if (data.estado === 'BLOQUEADO_SALDO') {
-      clearInterval(intervaloPasos);
-      mostrarBloqueado(resultId);
-      // ¡CLAVE AQUÍ! Seguir haciendo polling cada 5s para detectar el pago
-      setTimeout(consultarEstado, 5000);
+  <!-- LANDING VIEW -->
+  <div id="view-landing" class="landing-hero">
+    <div class="hero-text">
+      <h1>Estimaciones fiscales inmediatas para tus operaciones inmobiliarias.</h1>
+      <p>Calcula ISR, Cedular, ISAI e INSEJUPY en menos de 2 minutos. Ayuda a tus clientes a conocer sus costos antes de la notaría y acelera tus cierres en la Zona Metropolitana de Mérida.</p>
       
-    } else if (data.estado === 'BLOQUEADO_PROCESANDO') {
-      // No detener el polling, solo esperar y reintentar
-      console.log('Procesando crédito, reintentando...');
-      setTimeout(consultarEstado, 5000);
-    } else {
-      // Cualquier otro estado (por seguridad)
-      setTimeout(consultarEstado, 5000);
-    }    
-  }
-  script.onerror = function() {
-    delete window[callbackName];
-    try { document.body.removeChild(script); } catch(e) {}
-    setTimeout(consultarEstado, 6000);
-  };
+      <div class="hero-features">
+        <div class="feature-item">🏠 <span>Bienes Raíces</span></div>
+        <div class="feature-item">⚖️ <span>Legalidad</span></div>
+        <div class="feature-item">⚡ <span>Rapidez</span></div>
+      </div>
+    </div>
 
-  script.src = APPS_SCRIPT_URL +
-    '?action=status' +
-    '&resultId=' + encodeURIComponent(resultId) +
-    '&callback=' + callbackName;
-
-  document.body.appendChild(script);
-}
-
-// ── INICIAR PAGO STRIPE ────────────────────────────────────
-function iniciarPago(priceId) {
-  // Mostrar mensaje de espera
-  document.getElementById('pago-pendiente').style.display = 'block';
-  
-  // Crear llamada JSONP al backend para pedir la URL de Stripe
-  var callbackName = 'cb_pay_' + Date.now();
-  var script = document.createElement('script');
-
-  window[callbackName] = function(data) {
-    delete window[callbackName];
-    try { document.body.removeChild(script); } catch(e) {}
-
-        if (data.url) {
-      // Abrir Stripe en nueva pestaña
-      window.open(data.url, '_blank');
+    <div class="auth-card">
+      <h3>Crea tu cuenta gratis</h3>
+      <p>Te regalamos 5 cálculos para que pruebes la herramienta.</p>
       
-      // Reanudar el polling silenciosamente cada 5 segundos para detectar cuando se acredite
-      intentos = 0; // Resetear intentos para dar tiempo al pago
-      setTimeout(consultarEstado, 5000);
-    } else {
-      alert('Error de Stripe: ' + (data.error || 'Desconocido'));
-      document.getElementById('pago-pendiente').style.display = 'none';
+      <button class="btn-google">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+      
+      <div class="divider">O</div>
+      
+      <input type="email" class="input-field" placeholder="tu@correo.com">
+      <button class="btn-primary" style="width: 100%; padding: 12px;">Enviar código de acceso</button>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: 16px; text-align: center;">Sin contraseñas. Te enviaremos un código de un solo uso.</p>
+    </div>
+  </div>
+
+  <!-- WORKSTATION VIEW -->
+  <div id="view-workstation" class="workstation">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-item active">🏠 Inicio</div>
+      <div class="sidebar-item">📊 Historial</div>
+      <div class="sidebar-item">💳 Mi Saldo</div>
+      <div class="sidebar-item">⚙️ Soporte</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ws-content">
+      <div class="ws-header">
+        <h2 class="ws-title">Tu Estación de Trabajo</h2>
+        <p style="color: var(--text-muted);">Gestiona tus operaciones y cálculos fiscales.</p>
+      </div>
+
+      <div class="balance-box">
+        <div>
+          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 4px;">Créditos disponibles</p>
+          <div class="balance-number">5</div>
+        </div>
+        <button class="btn-primary">Recargar Saldo</button>
+      </div>
+
+      <button class="btn-primary" style="width: 100%; padding: 16px; font-size: 16px; background: var(--navy);">➕ Iniciar Nueva Operación</button>
+    </div>
+  </div>
+
+  <script>
+    // Lógica básica de cambio de vistas
+    function showView(viewName) {
+      document.getElementById('view-landing').style.display = viewName === 'landing' ? 'grid' : 'none';
+      document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
     }
-  };
 
-  script.onerror = function() {
-    delete window[callbackName];
-    try { document.body.removeChild(script); } catch(e) {}
-    alert('Error de red al contactar a Stripe.');
-    document.getElementById('pago-pendiente').style.display = 'none';
-  };
-
-  // Hacemos la petición al backend con el resultId y el priceId
-  script.src = APPS_SCRIPT_URL +
-    '?action=pay' +
-    '&resultId=' + encodeURIComponent(resultId) +
-    '&priceId=' + encodeURIComponent(priceId) +
-    '&callback=' + callbackName;
-
-  document.body.appendChild(script);
-}
-
-// ── CARGAR RESULTADO COMPLETO ──────────────────────────────
-/*function cargarResultado() {
-  var url = APPS_SCRIPT_URL + '?action=data&resultId=' + encodeURIComponent(resultId);
-
-  fetch(url)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.error) { mostrarError(data.error); return; }
-      renderizarResultado(data);
-    })
-    .catch(function(err) {
-      mostrarError('Error al cargar el resultado: ' + err.message);
-    });
-}*/
-
-// ── RENDERIZAR RESULTADO ───────────────────────────────────
-function renderizarResultado(d) {
-  if (!d || !d.resultado) {
-    mostrarError('El resultado no tiene el formato esperado. Recarga la página.');
-    return;
-  }
-  var r = d.resultado;
-  console.log('data completo:', JSON.stringify(d).substring(0, 500));
-
-  // Meta
-  document.getElementById('meta-resultado').innerHTML =
-    '<strong>Municipio:</strong> ' + (r.municipio || '') +
-    ' &nbsp;|&nbsp; <strong>Fecha:</strong> ' + (r.fechaCalculo || '');
-
-  // Aviso de saldo
-  var saldo = d.saldoRestante;
-  var avisoHtml = '';
-  if (saldo === 0) {
-    avisoHtml = aviso('urgente',
-      'Tus créditos se agotaron.',
-      'Recarga para continuar calculando operaciones.',
-      true);
-  } else if (saldo === 1) {
-    avisoHtml = aviso('urgente',
-      'Te queda 1 cálculo disponible.',
-      'Recarga antes de tu próxima operación.',
-      true);
-  } else if (saldo === 2) {
-    avisoHtml = aviso('info',
-      'Te quedan 2 cálculos disponibles.',
-      'Recarga antes de terminar para evitar interrupciones.',
-      true);
-  }
-  document.getElementById('aviso-saldo').innerHTML = avisoHtml;
-
-  // Botón PDF
-var urlPDF = r.urlPDF || '';
-  if (urlPDF) {
-    document.getElementById('btn-pdf').href = urlPDF;
-    document.getElementById('btn-pdf').textContent = '⬇️ Descargar PDF';
-  } else {
-    document.getElementById('btn-pdf').textContent = '⏳ Generando PDF...';
-    document.getElementById('btn-pdf').href = '#';
-    // Reintentar cada 5 segundos hasta que el PDF esté listo
-    var intentosPDF = 0;
-    var intervaloPDF = setInterval(function() {
-      intentosPDF++;
-      if (intentosPDF > 12) { // máximo 1 minuto
-        clearInterval(intervaloPDF);
-        document.getElementById('btn-pdf').textContent = '📄 PDF no disponible';
-        return;
-      }
-      var cbName = 'cb_pdf_' + Date.now();
-      var s = document.createElement('script');
-      window[cbName] = function(data) {
-        delete window[cbName];
-        try { document.body.removeChild(s); } catch(e) {}
-        if (data.resultado && data.resultado.urlPDF) {
-          clearInterval(intervaloPDF);
-          document.getElementById('btn-pdf').href = data.resultado.urlPDF;
-          document.getElementById('btn-pdf').textContent = '⬇️ Descargar PDF';
-        }
-      };
-      s.onerror = function() {
-        delete window[cbName];
-        try { document.body.removeChild(s); } catch(e) {}
-      };
-      s.src = APPS_SCRIPT_URL +
-        '?action=status&resultId=' + encodeURIComponent(resultId) +
-        '&callback=' + cbName;
-      document.body.appendChild(s);
-    }, 5000);
-  }
-
-  // Botón WhatsApp
-  // Usamos la URL del PDF directo de Drive. Si por alguna razón no existe, usamos la URL de la web.
-  var urlParaCompartir = r.urlPDF || window.location.href;
-  var msgWA =
-    '📊 *Estimación Fiscal FiscalCheck*\n' +
-    'Municipio: ' + (r.municipio || '') + '\n' +
-    'Precio venta: ' + fmt(r.baseISAI) + '\n\n' +
-    '*VENDEDOR*\n' +
-    'ISR Federal: ' + fmt(r.ISRFederal) + '\n' +
-    'Cedular Yucatán: ' + fmt(r.impuestoCedular) + '\n' +
-    '*Total vendedor: ' + fmt(r.totalVendedor) + '*\n\n' +
-    '*COMPRADOR*\n' +
-    'ISAI: ' + fmt(r.ISAI) + '\n' +
-    'INSEJUPY: ' + fmt(r.derechosINSEJUPY) + '\n' +
-    '*Total comprador: ' + fmt(r.totalComprador) + '*\n\n' +
-    '📄 *Descarga tu PDF aquí:*\n' + urlParaCompartir;
-  document.getElementById('btn-wa').href =
-    'https://wa.me/?text=' + encodeURIComponent(msgWA);
-
-  // Cuerpo del resultado
-  var html = '';
-
-  // Vendedor
-  html += '<h2>Vendedor</h2>';
-  html += fila('Costo actualizado', fmt(r.costoActualizado));
-  html += fila('Ganancia total', fmt(r.gananciaTotal));
-  if (r.esCasaHabitacion) {
-    html += fila('Límite exención Art. 93 (×' + r.NE + ')',
-                 fmt(r.limiteExencionPesos));
-  }
-  html += fila('Ganancia gravable', fmt(r.gananciaGravable));
-  html += fila('ISR Federal provisional (Art. 126)', fmt(r.ISRFederal));
-  html += fila('Impuesto Cedular Yucatán (5%)', fmt(r.impuestoCedular));
-  html += '<div class="total"><span>Total vendedor</span>' +
-          '<span>' + fmt(r.totalVendedor) + '</span></div>';
-
-  // Comprador
-  html += '<h2>Comprador</h2>';
-  html += fila('Base ISAI', fmt(r.baseISAI));
-  html += fila('ISAI ' + (r.municipio || '') +
-               ' (' + (r.tipoEstructuraISAI || '') + ')', fmt(r.ISAI));
-
-  if (r.tipoEstructuraISAI === 'tramos_tasa_plena') {
-    html += '<div class="nota-isai">⚠️ Este municipio aplica tasa plena por tramo. ' +
-            'Cruzar el umbral produce un salto en el ISAI. ' +
-            'Considerar en la negociación.</div>';
-  }
-
-  html += fila('Derechos INSEJUPY (12.70 UMAs)', fmt(r.derechosINSEJUPY));
-  html += '<div class="total"><span>Total comprador</span>' +
-          '<span>' + fmt(r.totalComprador) + '</span></div>';
-
-  // Advertencias
-  if (r.advertencias && r.advertencias.length > 0) {
-    html += '<h2>Advertencias</h2>';
-    r.advertencias.forEach(function(a) {
-      html += '<div class="advertencia">⚠️ ' + a + '</div>';
-    });
-  }
-
-  document.getElementById('cuerpo-resultado').innerHTML = html;
-  document.getElementById('disclaimer-texto').textContent = r.disclaimer || '';
-
-  mostrarVista('resultado');
-}
-
-// ── HELPERS DE UI ──────────────────────────────────────────
-function mostrarVista(nombre) {
-  ['espera','resultado','bloqueado','error'].forEach(function(v) {
-    document.getElementById('vista-' + v).style.display =
-      v === nombre ? 'block' : 'none';
-  });
-}
-
-function mostrarBloqueado(resultId) {
-  document.getElementById('id-bloqueado').textContent = 'ID: ' + resultId;
-  mostrarVista('bloqueado');
-}
-
-function mostrarError(msg) {
-  document.getElementById('error-texto').textContent = msg;
-  mostrarVista('error');
-}
-
-function aviso(tipo, titulo, sub, conBotones) {
-  var botones = conBotones
-    ? '<div class="opciones-recarga">' +
-      '<button class="btn-recarga" onclick="iniciarPago(\'price_1TiSwxFV952RaBCC2cffZu1x\')">5 cálculos — $99 MXN</button>' +
-      '<button class="btn-recarga" onclick="iniciarPago(\'price_1TiSxLFV952RaBCCOHe8GkbJ\')">20 cálculos — $299 MXN</button>' +
-      '</div>'
-    : '';
-  return '<div class="aviso ' + tipo + '">' +
-         '<strong>' + titulo + '</strong><br><small>' + sub + '</small>' +
-         botones + '</div>';
-}
-
-function fila(label, valor) {
-  return '<div class="fila"><span class="label">' + label +
-         '</span><span class="valor">' + valor + '</span></div>';
-}
-
-function fmt(val) {
-  if (val === undefined || val === null || isNaN(val)) return '$0.00';
-  return '$' + parseFloat(val).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-</script>
+    // Iniciar en la Landing
+    showView('landing');
+  </script>
 </body>
-</html> 
+</html>
