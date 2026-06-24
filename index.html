@@ -504,8 +504,38 @@
 
   <script>
 
-        // ⚠️ IMPORTANTE: Cambia esta URL por la de tu Apps Script
+    // ⚠️ IMPORTANTE: Cambia esta URL por la de tu Apps Script
     var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQaOPVkYTYvLOq4Qgp_0fawAGUQJ5cYY0F3TyOPzo0MAtMuu0MLlzzf3MTV5Rl8p0N/exec';
+
+    function showView(viewName) {
+      document.getElementById('view-landing').style.display = viewName === 'landing' ? 'block' : 'none';
+      document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
+      const btn = document.getElementById('nav-auth-btn');
+      btn.innerText = viewName === 'workstation' ? 'Cerrar Sesión' : 'Iniciar Sesión';
+      window.scrollTo(0, 0);
+    }
+
+    function handleNavAuth() {
+      const btn = document.getElementById('nav-auth-btn');
+      if (btn.innerText === 'Cerrar Sesión') {
+        // Si está en Workstation y quiere cerrar sesión
+        localStorage.removeItem('fc_email');
+        localStorage.removeItem('fc_saldo');
+        showView('landing');
+      } else {
+        // Si está en Landing y quiere iniciar sesión
+        const email = localStorage.getItem('fc_email');
+        if (email) {
+          // Ya tiene sesión guardada, entra directo
+          const saldo = localStorage.getItem('fc_saldo') || 0;
+          document.querySelector('.saldo-sidebar .num').innerText = saldo;
+          showView('workstation');
+        } else {
+          // No tiene sesión, bajar a la caja de registro
+          document.getElementById('registro').scrollIntoView({behavior: 'smooth'});
+        }
+      }
+    }
 
     function enviarCodigo() {
       var email = document.getElementById('auth-email').value.trim();
@@ -544,8 +574,12 @@
         try { document.body.removeChild(script); } catch(e) {}
         
         if (data.success) {
-          sessionStorage.setItem('fc_email', data.email);
-          sessionStorage.setItem('fc_saldo', data.saldo);
+          // Usamos localStorage para que recuerde la sesión siempre
+          localStorage.setItem('fc_email', data.email);
+          localStorage.setItem('fc_saldo', data.saldo);
+          
+          // Actualizamos el saldo en la pantalla de Workstation
+          document.querySelector('.saldo-sidebar .num').innerText = data.saldo;
           showView('workstation');
         } else {
           alert(data.error || 'Código incorrecto');
@@ -561,20 +595,18 @@
       document.getElementById('auth-step-2').style.display = 'none';
       document.getElementById('auth-subtitle').innerText = 'Desbloquea tus 5 cálculos gratis inmediatamente.';
     }
-    function showView(viewName) {
-      document.getElementById('view-landing').style.display = viewName === 'landing' ? 'block' : 'none';
-      document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
-      const btn = document.getElementById('nav-auth-btn');
-      btn.innerText = viewName === 'workstation' ? 'Cerrar Sesión' : 'Iniciar Sesión';
-      window.scrollTo(0, 0);
-    }
 
-    function handleNavAuth() {
-      const btn = document.getElementById('nav-auth-btn');
-      showView(btn.innerText === 'Cerrar Sesión' ? 'landing' : 'workstation');
-    }
-
-    showView('landing');
+    // ── AL CARGAR LA PÁGINA, REVISAR SI YA HAY SESIÓN ──
+    window.onload = function() {
+      const savedEmail = localStorage.getItem('fc_email');
+      if (savedEmail) {
+        const savedSaldo = localStorage.getItem('fc_saldo') || 0;
+        document.querySelector('.saldo-sidebar .num').innerText = savedSaldo;
+        showView('workstation');
+      } else {
+        showView('landing');
+      }
+    };
   </script>
 </body>
 </html>
