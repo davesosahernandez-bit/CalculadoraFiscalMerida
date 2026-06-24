@@ -418,7 +418,8 @@
       </div>
     </div>
 
-    <!-- Sección 5: Sobre el Fundador -->
+        <!-- Sección 5: Sobre el Fundador -->
+    <div id="landing-extras" style="display: none;">
     <div class="about-section">
       <div class="about-card">
         <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=500&auto=format&fit=crop" alt="David Sosa Hernández" class="about-photo">
@@ -457,7 +458,8 @@
 
     <footer class="footer">
       <p>FiscalCheck es una herramienta de estimación orientativa de pre-cierre. El cálculo definitivo y vinculante corresponde exclusivamente al Notario Público.</p>
-    </footer>
+        </footer>
+    </div> <!-- Cierra landing-extras -->
   </div>
 
   <!-- ─────────── WORKSTATION VIEW ─────────── -->
@@ -649,9 +651,14 @@
     // ⚠️ IMPORTANTE: Cambia esta URL por la de tu Apps Script
     var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQaOPVkYTYvLOq4Qgp_0fawAGUQJ5cYY0F3TyOPzo0MAtMuu0MLlzzf3MTV5Rl8p0N/exec';
 
-    function showView(viewName) {
+        function showView(viewName) {
       document.getElementById('view-landing').style.display = viewName === 'landing' ? 'block' : 'none';
       document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
+      
+      // Mostrar la sección "Acerca de" y Footer SOLO en la landing
+      const extras = document.getElementById('landing-extras');
+      if (extras) extras.style.display = viewName === 'landing' ? 'block' : 'none';
+
       const btn = document.getElementById('nav-auth-btn');
       btn.innerText = viewName === 'workstation' ? 'Cerrar Sesión' : 'Iniciar Sesión';
       window.scrollTo(0, 0);
