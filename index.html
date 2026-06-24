@@ -493,17 +493,18 @@
       <div class="bottom-nav-item"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg> Saldo</div>
     </nav>
   </div>
-    <!-- ─────────── MODAL FORMULARIO ─────────── -->
+  <!-- ─────────── MODAL FORMULARIO ─────────── -->
   <div id="modal-form" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,42,35,0.8); z-index:200; align-items:center; justify-content:center; padding:24px;">
     <div style="background:white; max-width:600px; width:100%; padding:32px; border-radius:16px; max-height:90vh; overflow-y:auto; position:relative;">
-      <button onclick="cerrarModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-muted);">&times;</button>
-      <h2 style="font-size:24px; color:var(--navy); margin-bottom:8px;">Nueva Operación</h2>
-      <p style="font-size:14px; color:var(--text-muted); margin-bottom:24px;">Ingresa los datos de la escritura.</p>
+      <button onclick="cerrarModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748B;">&times;</button>
+      <h2 style="font-size:24px; color:#0F2A23; margin-bottom:8px;">Nueva Operación</h2>
+      <p style="font-size:14px; color:#64748B; margin-bottom:24px;">Ingresa los datos de la escritura.</p>
       
       <div style="display:grid; gap:16px;">
-        <div>
-          <label style="font-size:13px; font-weight:600; color:var(--text-main);">Municipio</label>
-          <select id="f-municipio" class="input-field" style="margin-top:4px;">
+        
+        <div style="background:#F8FAFC; padding:16px; border-radius:12px; border:1px solid #E2E8F0;">
+          <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:8px;">Municipio</label>
+          <select id="f-municipio" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B; background:white;">
             <option value="MERIDA">Mérida</option>
             <option value="KANASIN">Kanasín</option>
             <option value="CONKAL">Conkal</option>
@@ -513,52 +514,87 @@
             <option value="UCU">Ucú</option>
           </select>
         </div>
-        
+
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
           <div>
-            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Precio de Venta ($)</label>
-            <input type="number" id="f-precio" class="input-field" style="margin-top:4px;" placeholder="Ej: 2500000">
+            <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Precio de Venta ($)</label>
+            <input type="number" id="f-precio" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 2500000">
           </div>
           <div>
-            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Valor Catastral ($)</label>
-            <input type="number" id="f-catastral" class="input-field" style="margin-top:4px;" placeholder="Ej: 500000">
+            <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Valor Catastral ($)</label>
+            <input type="number" id="f-catastral" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 500000">
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
           <div>
-            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Costo Original ($)</label>
-            <input type="number" id="f-costo" class="input-field" style="margin-top:4px;" placeholder="Ej: 1000000">
+            <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Costo Original ($)</label>
+            <input type="number" id="f-costo" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 1000000">
           </div>
           <div>
-            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Avalúo Pericial ($)</label>
-            <input type="number" id="f-avaluo" class="input-field" style="margin-top:4px;" placeholder="0 si no hay">
+            <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Avalúo Pericial ($)</label>
+            <input type="number" id="f-avaluo" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="0 si no hay">
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
           <div>
-            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Fecha de Adquisición</label>
-            <input type="month" id="f-fecAdq" class="input-field" style="margin-top:4px;">
+            <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Fecha de Adquisición</label>
+            <input type="month" id="f-fecAdq" style="width:100%; padding:11px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B; background:white;">
           </div>
           <div>
-            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Fecha de Escritura</label>
-            <input type="month" id="f-fecVen" class="input-field" style="margin-top:4px;">
+            <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Fecha de Escritura</label>
+            <input type="month" id="f-fecVen" style="width:100%; padding:11px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B; background:white;">
           </div>
         </div>
 
-        <div style="display:flex; gap:24px; margin-top:8px;">
-          <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer;">
-            <input type="checkbox" id="f-casa" onchange="toggleCopropiedad()"> ¿Aplicar exención Art. 93 (Casa Habitación)?
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:8px; padding:16px; background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; color:#1E293B;">
+            <input type="checkbox" id="f-casa" style="width:18px; height:18px;"> ¿Aplicar exención Art. 93 (Casa Habitación)?
           </label>
+          
+          <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; color:#1E293B;">
+            <input type="checkbox" id="f-copropiedad" style="width:18px; height:18px;" onchange="toggleCopropiedad()"> ¿Es Copropiedad?
+          </label>
+          <div id="copropiedad-box" style="display:none; margin-top:8px;">
+            <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Número de Enajenantes</label>
+            <input type="number" id="f-ne" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" value="2" min="2" max="3">
+          </div>
+
+          <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; color:#1E293B;">
+            <input type="checkbox" id="f-tieneDeducciones" style="width:18px; height:18px;" onchange="toggleDeducciones()"> ¿Tiene deducciones (Notariales, Mejoras)?
+          </label>
+          <div id="deducciones-box" style="display:none; margin-top:8px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Monto Deducciones ($)</label>
+                <input type="number" id="f-deducciones" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 50000">
+              </div>
+              <div>
+                <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Fecha de Erogación</label>
+                <input type="month" id="f-fecErog" style="width:100%; padding:11px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B; background:white;">
+              </div>
+            </div>
+          </div>
+
+          <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; color:#1E293B;">
+            <input type="checkbox" id="f-desglose" style="width:18px; height:18px;" onchange="toggleDesglose()"> ¿Tengo desglose de m²?
+          </label>
+          <div id="desglose-box" style="display:none; margin-top:8px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">m² Terreno</label>
+                <input type="number" id="f-m2Ter" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 150">
+              </div>
+              <div>
+                <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">m² Construcción</label>
+                <input type="number" id="f-m2Const" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 100">
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="copropiedad-box" style="display:none; background:var(--snow); padding:16px; border-radius:12px; border:1px solid var(--border);">
-          <label style="font-size:13px; font-weight:600; color:var(--text-main);">Número de Enajenantes (Copropiedad)</label>
-          <input type="number" id="f-ne" class="input-field" style="margin-top:4px;" value="1" min="1" max="3">
-        </div>
-
-        <button class="btn-primary" style="width:100%; padding:16px; font-size:16px; margin-top:16px;" onclick="enviarCalculo()">Calcular Impuestos</button>
+        <button class="btn-primary" style="width:100%; padding:16px; font-size:16px; margin-top:16px; background:#10B981; color:white; border:none; cursor:pointer;" onclick="enviarCalculo()">Calcular Impuestos</button>
       </div>
     </div>
   </div>
@@ -594,13 +630,30 @@
     }
 
     function toggleCopropiedad() {
-      const checked = document.getElementById('f-casa').checked;
+      const checked = document.getElementById('f-copropiedad').checked;
       document.getElementById('copropiedad-box').style.display = checked ? 'block' : 'none';
-      if (!checked) document.getElementById('f-ne').value = 1;
+    }
+
+    function toggleDeducciones() {
+      const checked = document.getElementById('f-tieneDeducciones').checked;
+      document.getElementById('deducciones-box').style.display = checked ? 'block' : 'none';
+    }
+
+    function toggleDesglose() {
+      const checked = document.getElementById('f-desglose').checked;
+      document.getElementById('desglose-box').style.display = checked ? 'block' : 'none';
     }
 
     function enviarCalculo() {
       const email = localStorage.getItem('fc_email');
+      if (!email) { alert('Tu sesión expiró. Inicia sesión de nuevo.'); showView('landing'); return; }
+
+      const tieneDeducc = document.getElementById('f-tieneDeducciones').checked;
+      const tieneDesg = document.getElementById('f-desglose').checked;
+      const fecErog = document.getElementById('f-fecErog').value;
+      const fecAdq = document.getElementById('f-fecAdq').value;
+      const fecVen = document.getElementById('f-fecVen').value;
+
       const payload = {
         email: email,
         municipio: document.getElementById('f-municipio').value,
@@ -608,18 +661,22 @@
         valorCatastral: document.getElementById('f-catastral').value,
         costoOriginal: document.getElementById('f-costo').value,
         avaluoPericial: document.getElementById('f-avaluo').value || 0,
-        mesAdquisicion: document.getElementById('f-fecAdq').value.split('-')[1],
-        añoAdquisicion: document.getElementById('f-fecAdq').value.split('-')[0],
-        mesVenta: document.getElementById('f-fecVen').value.split('-')[1],
-        añoVenta: document.getElementById('f-fecVen').value.split('-')[0],
+        mesAdquisicion: fecAdq ? fecAdq.split('-')[1] : '',
+        añoAdquisicion: fecAdq ? fecAdq.split('-')[0] : '',
+        mesVenta: fecVen ? fecVen.split('-')[1] : '',
+        añoVenta: fecVen ? fecVen.split('-')[0] : '',
         esCasaHabitacion: document.getElementById('f-casa').checked,
-        numeroEnajenantes: document.getElementById('f-ne').value || 1,
-        deduccionesOriginales: 0,
-        tieneDesglose: false
+        numeroEnajenantes: document.getElementById('f-copropiedad').checked ? document.getElementById('f-ne').value : 1,
+        deduccionesOriginales: tieneDeducc ? document.getElementById('f-deducciones').value : 0,
+        mesErogacion: tieneDeducc && fecErog ? fecErog.split('-')[1] : null,
+        añoErogacion: tieneDeducc && fecErog ? fecErog.split('-')[0] : null,
+        tieneDesglose: tieneDesg,
+        m2Terreno: tieneDesg ? document.getElementById('f-m2Ter').value : 0,
+        m2Construccion: tieneDesg ? document.getElementById('f-m2Const').value : 0
       };
 
-      if (!payload.precioVenta || !payload.catastral || !payload.costo) {
-        alert('Por favor completa los campos obligatorios.');
+      if (!payload.precioVenta || !payload.valorCatastral || !payload.costoOriginal || !payload.mesAdquisicion || !payload.mesVenta) {
+        alert('Por favor completa los campos obligatorios (Precios y Fechas).');
         return;
       }
 
@@ -633,10 +690,9 @@
         
         if (data.success) {
           cerrarModal();
-          // Redirigir a la pantalla de procesando
           window.location.href = '?resultId=' + data.requestID;
         } else {
-          alert(data.error || 'Error al calcular');
+          alert(data.error || 'Error al calcular. Verifica tus datos.');
         }
       };
 
