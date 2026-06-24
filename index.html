@@ -17,6 +17,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--snow);
@@ -45,38 +46,32 @@
     .btn-primary { background-color: var(--blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.1s, background 0.2s; font-size: 14px; }
     .btn-primary:hover { background-color: #0ca678; transform: translateY(-1px); }
 
-    /* ── LAYOUT CONTAINERS ── */
+    /* ── CONTAINERS ── */
     .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
     /* ── HERO ── */
     .hero {
-      padding: 80px 0 60px;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px;
+    }
+    .hero-content {
+      max-width: 1000px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 60px;
       align-items: center;
+      width: 100%;
     }
     .hero-text h1 { font-size: 48px; line-height: 1.1; color: var(--navy); margin-bottom: 20px; font-weight: 800; letter-spacing: -1.5px; }
     .hero-text p { font-size: 18px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
-    
-    .auth-box {
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-      border: 1px solid var(--border);
-      max-width: 400px;
-    }
-    .auth-box h3 { font-size: 18px; color: var(--navy); margin-bottom: 16px; font-weight: 700; }
-    .input-group { margin-bottom: 12px; }
-    .input-field { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; }
-    .btn-auth { width: 100%; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; border: none; }
-    .btn-google { background: white; border: 1px solid var(--border); color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; }
-    .divider { text-align: center; color: var(--text-muted); font-size: 11px; margin: 16px 0; position: relative; text-transform: uppercase; letter-spacing: 1px; }
-    .divider span { background: white; padding: 0 12px; position: relative; z-index: 2; }
-    .divider::before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: var(--border); z-index: 0; }
+    .hero-cta { display: flex; gap: 12px; }
+    .btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--navy); padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.2s; }
+    .btn-outline:hover { background: var(--navy); color: white; }
 
-    /* ── DEMO CARD (HOOK VISUAL) ── */
+    /* ── DEMO CARD ── */
     .demo-wrapper { position: relative; display: flex; justify-content: center; }
     .demo-card {
       background: white;
@@ -99,34 +94,86 @@
     .demo-row strong { color: var(--text-main); }
     .demo-total { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--border); font-size: 18px; font-weight: 800; color: var(--blue); }
 
-    /* ── SECCIONES ── */
-    .section { padding: 80px 0; }
-    .section-title { font-size: 36px; color: var(--navy); font-weight: 700; margin-bottom: 12px; text-align: center; letter-spacing: -1px; }
-    .section-subtitle { font-size: 18px; color: var(--text-muted); text-align: center; max-width: 600px; margin: 0 auto 48px; }
+    /* ── SECCIONES ZIG-ZAG ── */
+    .section { padding: 80px 24px; }
+    .section-title { font-size: 36px; color: var(--navy); font-weight: 700; margin-bottom: 48px; text-align: center; letter-spacing: -1px; }
     
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .card { background: white; padding: 32px; border-radius: 16px; border: 1px solid var(--border); transition: all 0.3s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
-    .icon-box { width: 48px; height: 48px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--blue); margin-bottom: 20px; }
-    .card h4 { font-size: 18px; color: var(--navy); margin-bottom: 12px; }
-    .card p { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
-    .card-note { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 12px; display: block; }
+    .zigzag-row {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      margin-bottom: 80px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .zigzag-row:last-child { margin-bottom: 0; }
+    .zigzag-row.reverse { flex-direction: row-reverse; }
+    .zigzag-text { flex: 1; }
+    .zigzag-text h3 { font-size: 28px; color: var(--navy); margin-bottom: 16px; }
+    .zigzag-text p { font-size: 16px; color: var(--text-muted); line-height: 1.6; }
+    .zigzag-img { flex: 1; height: 320px; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .zigzag-img img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* ── PRECIOS ── */
-    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 900px; margin: 0 auto; }
-    .pricing-card { background: white; padding: 32px 24px; border-radius: 16px; border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; }
-    .pricing-card.popular { border: 2px solid var(--blue); box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15); }
-    .pricing-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--blue); color: white; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .pricing-card h4 { font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
-    .price { font-size: 36px; color: var(--navy); font-weight: 800; margin-bottom: 24px; }
-    .price span { font-size: 14px; font-weight: 500; color: var(--text-muted); }
-    .pricing-card ul { list-style: none; margin-bottom: 24px; flex-grow: 1; }
-    .pricing-card ul li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-main); margin-bottom: 12px; }
-    .pricing-card ul li .icon { color: var(--blue); width: 16px; height: 16px; }
-    .pricing-note { font-size: 12px; color: var(--blue); font-weight: 600; margin-bottom: 16px; text-align: center; }
+    /* ── COBERTURA VISUAL ── */
+    .coverage-section {
+      position: relative;
+      padding: 100px 24px;
+      background: url('https://images.unsplash.com/photo-1503551723145-6c040742065b-v2?q=80&w=1500&auto=format&fit=crop') center/cover no-repeat fixed;
+    }
+    .coverage-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 42, 35, 0.85);
+    }
+    .coverage-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      color: white;
+    }
+    .coverage-content h2 { font-size: 36px; margin-bottom: 16px; font-weight: 700; }
+    .coverage-content p { font-size: 18px; color: #94a3b8; margin-bottom: 40px; }
+    .coverage-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    .coverage-tag { background: rgba(255,255,255,0.1); border: 1px solid var(--blue); color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; }
+    .coverage-note { margin-top: 32px; font-size: 14px; color: var(--green); font-weight: 600; }
 
-    .footer { background: var(--navy); color: white; padding: 40px 24px; text-align: center; margin-top: 80px; }
-    .footer p { font-size: 13px; color: #94a3b8; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+    /* ── CIERRE (PRECIOS + AUTH) ── */
+    .closing-section { padding: 80px 24px; background: white; }
+    .closing-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; max-width: 1000px; margin: 0 auto; align-items: start; }
+    
+    .pricing-info h2 { font-size: 32px; color: var(--navy); margin-bottom: 16px; }
+    .pricing-info p { font-size: 16px; color: var(--text-muted); margin-bottom: 32px; }
+    .bundle-card { background: var(--snow); border: 1px solid var(--border); padding: 24px; border-radius: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .bundle-card.highlight { border: 2px solid var(--blue); background: white; }
+    .bundle-info h4 { font-size: 18px; color: var(--navy); margin-bottom: 4px; }
+    .bundle-info p { font-size: 14px; color: var(--text-muted); margin: 0; }
+    .bundle-price { font-size: 24px; font-weight: 800; color: var(--navy); }
+
+    .auth-final-box {
+      background: var(--navy);
+      padding: 32px;
+      border-radius: 16px;
+      color: white;
+      position: sticky;
+      top: 100px;
+    }
+    .auth-final-box h3 { font-size: 22px; margin-bottom: 8px; }
+    .auth-final-box p { font-size: 14px; color: #94a3b8; margin-bottom: 24px; }
+    .input-group { margin-bottom: 12px; }
+    .input-field { width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; background: rgba(255,255,255,0.05); color: white; }
+    .input-field::placeholder { color: #94a3b8; }
+    .btn-auth { width: 100%; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; border: none; }
+    .btn-google { background: white; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; }
+    .btn-auth-primary { background: var(--blue); color: white; }
+    .divider-dark { text-align: center; color: #94a3b8; font-size: 11px; margin: 16px 0; position: relative; text-transform: uppercase; letter-spacing: 1px; }
+    .divider-dark span { background: var(--navy); padding: 0 12px; position: relative; z-index: 2; }
+    .divider-dark::before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: rgba(255,255,255,0.2); z-index: 0; }
+
+    .footer { background: var(--snow); padding: 40px 24px; text-align: center; border-top: 1px solid var(--border); }
+    .footer p { font-size: 13px; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
 
     /* ── WORKSTATION ── */
     .workstation { display: none; max-width: 1200px; margin: 40px auto; padding: 0 24px; grid-template-columns: 240px 1fr; gap: 32px; }
@@ -145,14 +192,16 @@
     
     /* ── RESPONSIVE MÓVIL ── */
     @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; gap: 48px; padding: 40px 0; text-align: center; }
-      .hero-text h1 { font-size: 36px; }
-      .auth-box { margin: 0 auto; }
-      .demo-card { margin: 0 auto; }
+      .hero-content { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+      .hero-text h1 { font-size: 32px; }
+      .hero-cta { justify-content: center; }
       
-      .grid-3, .pricing-grid { grid-template-columns: 1fr; gap: 20px; }
-      .section { padding: 48px 0; }
-      .section-title { font-size: 28px; }
+      .zigzag-row, .zigzag-row.reverse { flex-direction: column; gap: 24px; }
+      .zigzag-img { width: 100%; height: 240px; }
+      .zigzag-text { text-align: center; }
+      
+      .closing-grid { grid-template-columns: 1fr; }
+      .auth-final-box { position: static; }
       
       .workstation { grid-template-columns: 1fr; padding: 0 16px; margin-top: 24px; }
       .sidebar { display: none; }
@@ -179,146 +228,156 @@
   </nav>
 
   <!-- ─────────── LANDING VIEW ─────────── -->
-  <div id="view-landing" class="container">
+  <div id="view-landing">
     
-    <!-- Sección 1: Hero Directo + Demo -->
+    <!-- Sección 1: Hero Limpio y Centrado -->
     <div class="hero">
-      <div class="hero-text">
-        <h1>Estimaciones fiscales inmediatas para tus operaciones.</h1>
-        <p>Calcula ISR, Cedular, ISAI e INSEJUPY en menos de 2 minutos. Ayuda a tus clientes a conocer sus costos antes de la notaría y acelera tus cierces.</p>
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1>Estimaciones fiscales inmediatas para tus operaciones.</h1>
+          <p>Calcula ISR, Cedular, ISAI e INSEJUPY en menos de 2 minutos. Ayuda a tus clientes a conocer sus costos antes de la notaría y acelera tus cierres en la Zona Metropolitana de Mérida.</p>
+          <div class="hero-cta">
+            <button class="btn-primary" style="padding: 12px 24px; font-size: 15px;" onclick="document.getElementById('registro').scrollIntoView({behavior: 'smooth'})">Crear cuenta gratis</button>
+            <a href="#beneficios" class="btn-outline">Ver cómo funciona</a>
+          </div>
+        </div>
+
+        <div class="demo-wrapper">
+          <div class="demo-card">
+            <div class="demo-badge">EJEMPLO REAL</div>
+            <div class="demo-header">
+              <div>
+                <p>Operación</p>
+                <h4>Casa Habitación</h4>
+              </div>
+              <div style="text-align: right;">
+                <p>Municipio</p>
+                <h4>Mérida</h4>
+              </div>
+            </div>
+            
+            <div class="demo-row"><span>Precio de Venta</span><strong>$2,800,000</strong></div>
+            <div class="demo-row"><span>ISR Federal</span><strong>$58,400</strong></div>
+            <div class="demo-row"><span>Cedular Yucatán</span><strong>$12,500</strong></div>
+            <div class="demo-total"><span>Total Vendedor</span><span>$70,900</span></div>
+            
+            <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
+              <div class="demo-row"><span>ISAI Mérida</span><strong>$93,000</strong></div>
+              <div class="demo-row"><span>INSEJUPY</span><strong>$1,489</strong></div>
+              <div class="demo-total" style="color: var(--navy);"><span>Total Comprador</span><span>$94,489</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección 2: Beneficios en Zig-Zag -->
+    <div class="section" id="beneficios">
+      <h2 class="section-title">Potencia tu cierre comercial</h2>
+      
+      <div class="zigzag-row">
+        <div class="zigzag-text">
+          <h3>Rapidez al cierre</h3>
+          <p>Olvídate de esperar días a que el notario te dé números. Ten la estimación fiscal lista antes de salir de la propiedad y responde con confianza a las ofertas de tus clientes.</p>
+        </div>
+        <div class="zigzag-img">
+          <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1000&auto=format&fit=crop" alt="Agente inmobiliario entregando llaves">
+        </div>
+      </div>
+
+      <div class="zigzag-row reverse">
+        <div class="zigzag-text">
+          <h3>Dominio de los números</h3>
+          <p>Conoce el impacto fiscal exacto de cada operación. Responde con seguridad cuando el cliente pregunte "¿cuánto dejo de ganancia?" y negocia con ventaja frente a otros agentes.</p>
+        </div>
+        <div class="zigzag-img">
+          <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1000&auto=format&fit=crop" alt="Documentos y cálculos fiscales">
+        </div>
+      </div>
+
+      <div class="zigzag-row">
+        <div class="zigzag-text">
+          <h3>Profesionalismo</h3>
+          <p>Destaca entre otros agentes entregando reportes claros. Transmite confianza y transparencia total a tus compradores y vendedores con reportes en PDF listos para compartir.</p>
+        </div>
+        <div class="zigzag-img">
+          <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1000&auto=format&fit=crop" alt="Apretón de manos profesional">
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección 3: Cobertura Visual -->
+    <div class="coverage-section">
+      <div class="coverage-overlay"></div>
+      <div class="coverage-content">
+        <h2>Zonas de Alta Movilidad Inmobiliaria</h2>
+        <p>Nuestro motor fiscal está optimizado para las reglas exactas de los municipios con mayor actividad en Yucatán.</p>
+        <div class="coverage-tags">
+          <div class="coverage-tag">Mérida</div>
+          <div class="coverage-tag">Kanasín</div>
+          <div class="coverage-tag">Conkal</div>
+          <div class="coverage-tag">Umán</div>
+          <div class="coverage-tag">Progreso</div>
+          <div class="coverage-tag">Hunucmá</div>
+          <div class="coverage-tag">Ucú</div>
+        </div>
+        <div class="coverage-note">✨ Próximamente ampliando cobertura a otros municipios.</div>
+      </div>
+    </div>
+
+    <!-- Sección 4: Cierre (Bundles + Registro) -->
+    <div class="closing-section" id="registro">
+      <div class="closing-grid">
         
-        <div class="auth-box">
-          <h3>Crea tu cuenta. Te regalamos 5 cálculos.</h3>
+        <!-- Info de Créditos -->
+        <div class="pricing-info">
+          <h2>Precios simples. Sin sorpresas.</h2>
+          <p>Empieza gratis con 5 cálculos de cortesía. Cuando los termines, recarga solo lo que necesites. Sin mensualidades, sin contratos.</p>
+          
+          <div class="bundle-card">
+            <div class="bundle-info">
+              <h4>Prueba Gratis</h4>
+              <p>5 cálculos iniciales para que pruebes la herramienta.</p>
+            </div>
+            <div class="bundle-price">$0</div>
+          </div>
+
+          <div class="bundle-card highlight">
+            <div class="bundle-info">
+              <h4>Bundle 5</h4>
+              <p>5 cálculos adicionales. Ideal para agentes con flujo constante.</p>
+            </div>
+            <div class="bundle-price">$99</div>
+          </div>
+
+          <div class="bundle-card">
+            <div class="bundle-info">
+              <h4>Bundle 20</h4>
+              <p>20 cálculos adicionales. Asegúrate de no quedarte sin crédito en tus mejores meses.</p>
+            </div>
+            <div class="bundle-price">$299</div>
+          </div>
+        </div>
+
+        <!-- Caja de Registro Final -->
+        <div class="auth-final-box">
+          <h3>Crea tu cuenta</h3>
+          <p>Desbloquea tus 5 cálculos gratis inmediatamente.</p>
+          
           <button class="btn-auth btn-google">
             <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
             Continuar con Google
           </button>
-          <div class="divider"><span>O con tu correo</span></div>
+          
+          <div class="divider-dark"><span>O con tu correo</span></div>
+          
           <div class="input-group">
             <input type="email" class="input-field" placeholder="agente@inmobiliaria.com">
           </div>
-          <button class="btn-auth btn-primary">Enviar código de acceso</button>
+          <button class="btn-auth btn-auth-primary">Enviar código de acceso</button>
+          <p style="font-size: 11px; color: #94a3b8; margin-top: 16px; text-align: center;">Sin contraseñas. Te enviaremos un código de un solo uso.</p>
         </div>
-      </div>
 
-      <!-- Tarjeta Demo Flotante -->
-      <div class="demo-wrapper">
-        <div class="demo-card">
-          <div class="demo-badge">EJEMPLO REAL</div>
-          <div class="demo-header">
-            <div>
-              <p>Operación</p>
-              <h4>Casa Habitación</h4>
-            </div>
-            <div style="text-align: right;">
-              <p>Municipio</p>
-              <h4>Mérida</h4>
-            </div>
-          </div>
-          
-          <div class="demo-row"><span>Precio de Venta</span><strong>$2,650,000</strong></div>
-          <div class="demo-row"><span>ISR Federal</span><strong>$0.00</strong></div>
-          <div class="demo-row"><span>Cedular Yucatán</span><strong>$0.00</strong></div>
-          <div class="demo-total"><span>Total Vendedor</span><span>$0.00</span></div>
-          
-          <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
-            <div class="demo-row"><span>ISAI Mérida</span><strong>$84,750.00</strong></div>
-            <div class="demo-row"><span>INSEJUPY</span><strong>$1,489.84</strong></div>
-            <div class="demo-total" style="color: var(--navy);"><span>Total Comprador</span><span>$86,239.84</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sección 2: Beneficios al Agente -->
-    <div class="section">
-      <h2 class="section-title">Potencia tu cierre comercial</h2>
-      <p class="section-subtitle">No solo calcules impuestos, cierra operaciones con mayor certeza y velocidad.</p>
-      
-      <div class="grid-3">
-        <div class="card">
-          <div class="icon-box"><svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
-          <h4>Rapidez al Cierre</h4>
-          <p>Olvídate de esperar días a que el notario te dé números. Ten la estimación fiscal lista antes de salir de la propiedad.</p>
-        </div>
-        <div class="card">
-          <div class="icon-box"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
-          <h4>Dominio de los Números</h4>
-          <p>Conoce el impacto fiscal exacto de cada operación. Responde con seguridad cuando el cliente pregunte "¿cuánto dejo de ganancia?".</p>
-        </div>
-        <div class="card">
-          <div class="icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
-          <h4>Profesionalismo</h4>
-          <p>Destaca entre otros agentes entregando reportes claros. Transmite confianza y transparencia total a tus compradores y vendedores.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sección 3: Lo que ofrece la herramienta -->
-    <div class="section" style="background: white; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 0 -24px; padding: 80px 24px;">
-      <h2 class="section-title">Hacemos el trabajo pesado por ti</h2>
-      <p class="section-subtitle">Centraliza la estimación fiscal de tus operaciones inmobiliarias en una sola plataforma.</p>
-      
-      <div class="grid-3">
-        <div class="card">
-          <div class="icon-box"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="16" y2="14"></line></svg></div>
-          <h4>Motor de Cálculo Confiable</h4>
-          <p>Algoritmos basados en la legislación fiscal vigente 2026. Tú ingresas los datos de la escritura, nosotros resolvemos la matemática compleja.</p>
-        </div>
-        <div class="card">
-          <div class="icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
-          <h4>PDF Profesional</h4>
-          <p>Genera un reporte limpio y detallado en segundos, listo para descargar y compartir por WhatsApp directamente con tus clientes.</p>
-        </div>
-        <div class="card">
-          <div class="icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
-          <h4>Zonas de Alta Movilidad</h4>
-          <p>Cobertura actual en Mérida, Kanasín, Conkal, Umán, Progreso, Hunucmá y Ucú.</p>
-          <span class="card-note">✨ Próximamente ampliando cobertura a otros municipios.</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sección 4: Precios -->
-    <div class="section">
-      <h2 class="section-title">Precios simples. Sin sorpresas.</h2>
-      <p class="section-subtitle">Paga solo cuando lo necesites. Sin mensualidades, sin contratos forzosos.</p>
-      
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <h4>Prueba Gratis</h4>
-          <div class="price">$0 <span>/ 5 cálculos</span></div>
-          <ul>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 5 cálculos iniciales</li>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Historial de operaciones</li>
-          </ul>
-          <button class="btn-primary" style="width: 100%; margin-top: auto;" onclick="showView('workstation')">Registrarme</button>
-        </div>
-        
-        <div class="pricing-card popular">
-          <div class="pricing-badge">Más Popular</div>
-          <h4>Bundle 5</h4>
-          <div class="price">$99 <span>MXN</span></div>
-          <ul>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 5 cálculos adicionales</li>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Historial de operaciones</li>
-          </ul>
-          <button class="btn-primary" style="width: 100%; margin-top: auto;">Comprar ahora</button>
-        </div>
-        
-        <div class="pricing-card">
-          <h4>Bundle 20</h4>
-          <div class="price">$299 <span>MXN</span></div>
-          <p class="pricing-note">Asegúrate de no quedarte sin cálculos en tus mejores meses.</p>
-          <ul>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 20 cálculos adicionales</li>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Reportes en PDF</li>
-            <li><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Historial de operaciones</li>
-          </ul>
-          <button class="btn-primary" style="width: 100%; margin-top: auto;">Comprar ahora</button>
-        </div>
       </div>
     </div>
 
