@@ -503,6 +503,64 @@
   </div>
 
   <script>
+
+        // ⚠️ IMPORTANTE: Cambia esta URL por la de tu Apps Script
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQaOPVkYTYvLOq4Qgp_0fawAGUQJ5cYY0F3TyOPzo0MAtMuu0MLlzzf3MTV5Rl8p0N/exec';
+
+    function enviarCodigo() {
+      var email = document.getElementById('auth-email').value.trim();
+      if (!email) { alert('Ingresa tu correo'); return; }
+      
+      var callbackName = 'cb_login_' + Date.now();
+      var script = document.createElement('script');
+      
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        
+        if (data.success) {
+          document.getElementById('auth-step-1').style.display = 'none';
+          document.getElementById('auth-step-2').style.display = 'block';
+          document.getElementById('auth-subtitle').innerText = 'Ingresa el código enviado a ' + email;
+        } else {
+          alert(data.error || 'Error al enviar el código');
+        }
+      };
+
+      script.src = APPS_SCRIPT_URL + '?action=login&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    function verificarCodigo() {
+      var email = document.getElementById('auth-email').value.trim();
+      var code = document.getElementById('auth-code').value.trim();
+      if (!code) { alert('Ingresa el código'); return; }
+
+      var callbackName = 'cb_verify_' + Date.now();
+      var script = document.createElement('script');
+      
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        
+        if (data.success) {
+          sessionStorage.setItem('fc_email', data.email);
+          sessionStorage.setItem('fc_saldo', data.saldo);
+          showView('workstation');
+        } else {
+          alert(data.error || 'Código incorrecto');
+        }
+      };
+
+      script.src = APPS_SCRIPT_URL + '?action=verify&email=' + encodeURIComponent(email) + '&code=' + encodeURIComponent(code) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    function volverStep1() {
+      document.getElementById('auth-step-1').style.display = 'block';
+      document.getElementById('auth-step-2').style.display = 'none';
+      document.getElementById('auth-subtitle').innerText = 'Desbloquea tus 5 cálculos gratis inmediatamente.';
+    }
     function showView(viewName) {
       document.getElementById('view-landing').style.display = viewName === 'landing' ? 'block' : 'none';
       document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
