@@ -518,22 +518,22 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
           <div>
             <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Precio de Venta ($)</label>
-            <input type="number" id="f-precio" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 2500000">
+            <input type="text" inputmode="numeric" onkeyup="formatNumber(this)" id="f-precio" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 2,500,000.00">
           </div>
           <div>
             <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Valor Catastral ($)</label>
-            <input type="number" id="f-catastral" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 500000">
+            <input type="text" inputmode="numeric" onkeyup="formatNumber(this)" id="f-catastral" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 3,500,000.00">
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
           <div>
             <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Costo Original ($)</label>
-            <input type="number" id="f-costo" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 1000000">
+            <input type="text" inputmode="numeric" onkeyup="formatNumber(this)" id="f-costo" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 1,000,000.00">
           </div>
           <div>
             <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Avalúo Pericial ($)</label>
-            <input type="number" id="f-avaluo" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="0 si no hay">
+            <input type="text" inputmode="numeric" onkeyup="formatNumber(this)" id="f-avaluo" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="0 si no hay">
           </div>
         </div>
 
@@ -568,7 +568,7 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
               <div>
                 <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Monto Deducciones ($)</label>
-                <input type="number" id="f-deducciones" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 50000">
+                <input type="text" inputmode="numeric" onkeyup="formatNumber(this)" id="f-deducciones" style="width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B;" placeholder="Ej: 50,000.00">
               </div>
               <div>
                 <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Fecha de Erogación</label>
@@ -644,6 +644,14 @@
       document.getElementById('desglose-box').style.display = checked ? 'block' : 'none';
     }
 
+    // Función para formatear números con comas
+    function formatNumber(input) {
+      let value = input.value.replace(/[^0-9.]/g, ''); // Solo números y punto
+      let parts = value.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      input.value = parts.join('.');
+    }
+
     function enviarCalculo() {
       const email = localStorage.getItem('fc_email');
       if (!email) { alert('Tu sesión expiró. Inicia sesión de nuevo.'); showView('landing'); return; }
@@ -654,31 +662,52 @@
       const fecAdq = document.getElementById('f-fecAdq').value;
       const fecVen = document.getElementById('f-fecVen').value;
 
+      // Limpiar comas de los números antes de enviarlos
+      const cleanNum = (id) => document.getElementById(id).value.replace(/,/g, '');
+
+      // Calcular porcentajes si hay desglose
+      let pctTerreno = 20, pctConstr = 80;
+      if (tieneDesg) {
+        let m2T = parseFloat(cleanNum('f-m2Ter')) || 0;
+        let m2C = parseFloat(cleanNum('f-m2Const')) || 0;
+        if (m2T + m2C > 0) {
+          pctTerreno = (m2T / (m2T + m2C)) * 100;
+          pctConstr = (m2C / (m2T + m2C)) * 100;
+        }
+      }
+
       const payload = {
         email: email,
         municipio: document.getElementById('f-municipio').value,
-        precioVenta: document.getElementById('f-precio').value,
-        valorCatastral: document.getElementById('f-catastral').value,
-        costoOriginal: document.getElementById('f-costo').value,
-        avaluoPericial: document.getElementById('f-avaluo').value || 0,
+        precioVenta: cleanNum('f-precio'),
+        valorCatastral: cleanNum('f-catastral'),
+        costoOriginal: cleanNum('f-costo'),
+        avaluoPericial: cleanNum('f-avaluo') || 0,
         mesAdquisicion: fecAdq ? fecAdq.split('-')[1] : '',
         añoAdquisicion: fecAdq ? fecAdq.split('-')[0] : '',
         mesVenta: fecVen ? fecVen.split('-')[1] : '',
         añoVenta: fecVen ? fecVen.split('-')[0] : '',
         esCasaHabitacion: document.getElementById('f-casa').checked,
         numeroEnajenantes: document.getElementById('f-copropiedad').checked ? document.getElementById('f-ne').value : 1,
-        deduccionesOriginales: tieneDeducc ? document.getElementById('f-deducciones').value : 0,
+        deduccionesOriginales: tieneDeducc ? cleanNum('f-deducciones') : 0,
         mesErogacion: tieneDeducc && fecErog ? fecErog.split('-')[1] : null,
         añoErogacion: tieneDeducc && fecErog ? fecErog.split('-')[0] : null,
         tieneDesglose: tieneDesg,
-        m2Terreno: tieneDesg ? document.getElementById('f-m2Ter').value : 0,
-        m2Construccion: tieneDesg ? document.getElementById('f-m2Const').value : 0
+        m2Terreno: tieneDesg ? cleanNum('f-m2Ter') : 0,
+        m2Construccion: tieneDesg ? cleanNum('f-m2Const') : 0,
+        pctTerreno: pctTerreno,
+        pctConstr: pctConstr
       };
 
       if (!payload.precioVenta || !payload.valorCatastral || !payload.costoOriginal || !payload.mesAdquisicion || !payload.mesVenta) {
         alert('Por favor completa los campos obligatorios (Precios y Fechas).');
         return;
       }
+
+      // Cambiar botón a estado de carga
+      const btn = document.querySelector('#modal-form button.btn-primary');
+      btn.innerText = 'Calculando...';
+      btn.disabled = true;
 
       // Enviar a Apps Script
       var callbackName = 'cb_calc_' + Date.now();
@@ -688,8 +717,15 @@
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
         
+        btn.innerText = 'Calcular Impuestos';
+        btn.disabled = false;
+
         if (data.success) {
           cerrarModal();
+          // Actualizar saldo en la UI
+          localStorage.setItem('fc_saldo', parseInt(localStorage.getItem('fc_saldo')) - 1);
+          document.querySelector('.saldo-sidebar .num').innerText = localStorage.getItem('fc_saldo');
+          // Ir a la pantalla de procesando
           window.location.href = '?resultId=' + data.requestID;
         } else {
           alert(data.error || 'Error al calcular. Verifica tus datos.');
