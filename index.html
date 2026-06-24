@@ -261,7 +261,7 @@
       </div>
       <span class="logo-text">FiscalCheck</span>
     </a>
-    <button id="nav-auth-btn" class="btn-primary" onclick="handleNavAuth()">Iniciar Sesión</button>
+        <button id="nav-auth-btn" class="btn-primary" onclick="abrirModalAuth()">Iniciar Sesión</button>
   </nav>
 
   <!-- ─────────── LANDING VIEW ─────────── -->
@@ -398,21 +398,11 @@
           </div>
         </div>
 
-                <div class="auth-final-box">
-          <h3>Crea tu cuenta</h3>
-          <p id="auth-subtitle">Desbloquea tus 5 cálculos gratis inmediatamente.</p>
-          
-          <div id="auth-step-1">
-            <button class="btn-auth btn-google" onclick="alert('La autenticación con Google requiere configuración adicional. Por ahora usa tu correo.')">
-              <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-              Continuar con Google
-            </button>
-            <div class="divider-dark"><span>O con tu correo</span></div>
-            <div class="input-group">
-              <input type="email" id="auth-email" class="input-field" placeholder="agente@inmobiliaria.com">
-            </div>
-            <button class="btn-auth btn-auth-primary" onclick="enviarCodigo()">Enviar código de acceso</button>
-          </div>
+        <div class="auth-final-box" style="text-align: center;">
+          <h3>¿Listo para empezar?</h3>
+          <p>Regístrate y desbloquea tus 5 cálculos gratis inmediatamente.</p>
+          <button class="btn-auth btn-auth-primary" onclick="abrirModalAuth()">Crear cuenta / Iniciar Sesión</button>
+        </div>
 
           <div id="auth-step-2" style="display: none;">
             <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">Te enviamos un código a tu correo. Ingrésalo para continuar.</p>
@@ -570,6 +560,27 @@
       </div>
     </div>
   </div>
+    <!-- ─────────── MODAL AUTENTICACIÓN ─────────── -->
+  <div id="modal-auth" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,42,35,0.8); z-index:200; align-items:center; justify-content:center; padding:24px;">
+    <div style="background:white; max-width:400px; width:100%; padding:32px; border-radius:16px; text-align:center; position:relative;">
+      <button onclick="cerrarModalAuth()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748B;">&times;</button>
+      <h3 id="auth-title" style="font-size:22px; color:#0F2A23; margin-bottom:8px;">Iniciar Sesión</h3>
+      <p id="auth-sub" style="font-size:14px; color:#64748B; margin-bottom:24px;">Ingresa tu correo para continuar.</p>
+
+      <div id="auth-email-step">
+        <input type="email" id="auth-email" style="margin-bottom:12px; width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B; text-align:center;" placeholder="tu@correo.com">
+        <button class="btn-primary" style="width:100%; padding:12px;" onclick="checkEmail()">Continuar</button>
+      </div>
+
+      <div id="auth-pin-step" style="display:none;">
+        <p id="auth-pin-text" style="font-size:13px; color:#64748B; margin-bottom:12px;">Ingresa tu PIN de 4 dígitos.</p>
+        <input type="text" id="auth-pin" style="margin-bottom:12px; width:100%; padding:12px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:18px; letter-spacing:4px; color:#1E293B; text-align:center;" placeholder="****" maxlength="4">
+        <button class="btn-primary" style="width:100%; padding:12px;" onclick="verifyPin()">Entrar</button>
+        <a href="javascript:void(0)" onclick="resendPin()" style="display:block; margin-top:12px; font-size:12px; color:#10B981; text-decoration:none;">Olvidé mi PIN / Reenviar</a>
+        <a href="javascript:void(0)" onclick="backToEmail()" style="display:block; margin-top:8px; font-size:12px; color:#64748B; text-decoration:none;">Cambiar correo</a>
+      </div>
+    </div>
+  </div>
 
   <script>
         function abrirModalForm() {
@@ -646,57 +657,56 @@
       window.scrollTo(0, 0);
     }
 
-    function handleNavAuth() {
-      const btn = document.getElementById('nav-auth-btn');
-      if (btn.innerText === 'Cerrar Sesión') {
-        // Si está en Workstation y quiere cerrar sesión
+    function abrirModalAuth() {
+      // Si ya tiene sesión, este botón sirve para Cerrar Sesión
+      if (localStorage.getItem('fc_email')) {
         localStorage.removeItem('fc_email');
         localStorage.removeItem('fc_saldo');
         showView('landing');
-      } else {
-        // Si está en Landing y quiere iniciar sesión
-        const email = localStorage.getItem('fc_email');
-        if (email) {
-          // Ya tiene sesión guardada, entra directo
-          const saldo = localStorage.getItem('fc_saldo') || 0;
-          // Actualizar saldo en la Workstation
-          document.querySelector('.saldo-sidebar .num').innerText = saldo;
-          showView('workstation');
-        } else {
-          // No tiene sesión, bajar a la caja de registro
-          yenscrollIntoView({behavior: 'smooth'});
-        }
+        return;
       }
+      // Limpiar campos y abrir modal
+      document.getElementById('auth-email').value = '';
+      document.getElementById('auth-pin').value = '';
+      document.getElementById('auth-email-step').style.display = 'block';
+      document.getElementById('auth-pin-step').style.display = 'none';
+      document.getElementById('auth-title').innerText = 'Iniciar Sesión';
+      document.getElementById('auth-sub').innerText = 'Ingresa tu correo para continuar.';
+      document.getElementById('modal-auth').style.display = 'flex';
     }
 
-    function enviarCodigo() {
+    function cerrarModalAuth() {
+      document.getElementById('modal-auth').style.display = 'none';
+    }
+
+    function checkEmail() {
       var email = document.getElementById('auth-email').value.trim();
       if (!email) { alert('Ingresa tu correo'); return; }
       
-      var callbackName = 'cb_login_' + Date.now();
+      var callbackName = 'cb_check_' + Date.now();
       var script = document.createElement('script');
       
       window[callbackName] = function(data) {
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
         
-        if (data.success) {
-          document.getElementById('auth-step-1').style.display = 'none';
-          document.getElementById('auth-step-2').style.display = 'block';
-          document.getElementById('auth-subtitle').innerText = 'Ingresa el código enviado a ' + email;
-        } else {
-          alert(data.error || 'Error al enviar el código');
-        }
+        if (data.error) { alert(data.error); return; }
+        
+        // Si llega aquí, pedimos el PIN
+        document.getElementById('auth-email-step').style.display = 'none';
+        document.getElementById('auth-pin-step').style.display = 'block';
+        document.getElementById('auth-title').innerText = data.exists ? 'Ingresa tu PIN' : 'Verifica tu correo';
+        document.getElementById('auth-pin-text').innerText = data.exists ? 'Ingresa tu PIN de 4 dígitos.' : 'Te enviamos un PIN a tu correo. Ingrésalo aquí.';
       };
 
-      script.src = APPS_SCRIPT_URL + '?action=login&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      script.src = APPS_SCRIPT_URL + '?action=checkEmail&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
 
-    function verificarCodigo() {
+    function verifyPin() {
       var email = document.getElementById('auth-email').value.trim();
-      var code = document.getElementById('auth-code').value.trim();
-      if (!code) { alert('Ingresa el código'); return; }
+      var pin = document.getElementById('auth-pin').value.trim();
+      if (!pin) { alert('Ingresa tu PIN'); return; }
 
       var callbackName = 'cb_verify_' + Date.now();
       var script = document.createElement('script');
@@ -706,36 +716,52 @@
         try { document.body.removeChild(script); } catch(e) {}
         
         if (data.success) {
-          // Usamos localStorage para que recuerde la sesión siempre
           localStorage.setItem('fc_email', data.email);
           localStorage.setItem('fc_saldo', data.saldo);
-          
-          // Actualizamos el saldo en la pantalla de Workstation
           document.querySelector('.saldo-sidebar .num').innerText = data.saldo;
+          cerrarModalAuth();
           showView('workstation');
         } else {
-          alert(data.error || 'Código incorrecto');
+          alert(data.error || 'PIN incorrecto');
         }
       };
 
-      script.src = APPS_SCRIPT_URL + '?action=verify&email=' + encodeURIComponent(email) + '&code=' + encodeURIComponent(code) + '&callback=' + callbackName;
+      script.src = APPS_SCRIPT_URL + '?action=verifyPin&email=' + encodeURIComponent(email) + '&pin=' + encodeURIComponent(pin) + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
 
-    function volverStep1() {
-      document.getElementById('auth-step-1').style.display = 'block';
-      document.getElementById('auth-step-2').style.display = 'none';
-      document.getElementById('auth-subtitle').innerText = 'Desbloquea tus 5 cálculos gratis inmediatamente.';
+    function resendPin() {
+      var email = document.getElementById('auth-email').value.trim();
+      if (!email) return;
+      
+      var callbackName = 'cb_resend_' + Date.now();
+      var script = document.createElement('script');
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        alert(data.success ? 'Nuevo PIN enviado a tu correo.' : (data.error || 'Error'));
+      };
+      script.src = APPS_SCRIPT_URL + '?action=resendPin&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    function backToEmail() {
+      document.getElementById('auth-email-step').style.display = 'block';
+      document.getElementById('auth-pin-step').style.display = 'none';
+      document.getElementById('auth-title').innerText = 'Iniciar Sesión';
     }
 
     // ── AL CARGAR LA PÁGINA, REVISAR SI YA HAY SESIÓN ──
     window.onload = function() {
       const savedEmail = localStorage.getItem('fc_email');
+      const btn = document.getElementById('nav-auth-btn');
       if (savedEmail) {
         const savedSaldo = localStorage.getItem('fc_saldo') || 0;
         document.querySelector('.saldo-sidebar .num').innerText = savedSaldo;
+        btn.innerText = 'Cerrar Sesión';
         showView('workstation');
       } else {
+        btn.innerText = 'Iniciar Sesión';
         showView('landing');
       }
     };
