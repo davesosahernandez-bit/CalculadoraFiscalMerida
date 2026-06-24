@@ -659,11 +659,12 @@
         if (email) {
           // Ya tiene sesión guardada, entra directo
           const saldo = localStorage.getItem('fc_saldo') || 0;
+          // Actualizar saldo en la Workstation
           document.querySelector('.saldo-sidebar .num').innerText = saldo;
           showView('workstation');
         } else {
           // No tiene sesión, bajar a la caja de registro
-          document.getElementById('registro').scrollIntoView({behavior: 'smooth'});
+          yenscrollIntoView({behavior: 'smooth'});
         }
       }
     }
