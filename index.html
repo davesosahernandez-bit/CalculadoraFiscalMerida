@@ -422,7 +422,7 @@
             <button class="btn-auth btn-auth-primary" onclick="verificarCodigo()">Verificar y entrar</button>
             <button class="btn-auth" style="background:transparent; color:#94a3b8; margin-top:8px;" onclick="volverStep1()">Volver</button>
           </div>
-          <p style="font-size: 11px; color: #94a3b8; margin-top: 16px; text-align: center;">Sin contraseñas. Te enviaremos un código de un solo uso.</p>
+          <p style="font-size: 11px; color: #94a3b8; margin-top: 16px; text-align: center;">Sin contraseñas. Tu sesión se guardará en este dispositivo. Si cambias de computadora, solo pide un código nuevo.</p>
         </div>
 
       </div>
@@ -489,7 +489,7 @@
         <h2 class="ws-title">Bienvenido a tu Workstation</h2>
       </div>
       <p style="color: var(--text-muted); margin-bottom: 32px;">Desde aquí puedes iniciar nuevos cálculos, ver tu historial y gestionar tus créditos.</p>
-      <button class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;">
+            <button class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;" onclick="abrirModalForm()">
         <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         Iniciar Nueva Operación
       </button>
@@ -501,8 +501,139 @@
       <div class="bottom-nav-item"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg> Saldo</div>
     </nav>
   </div>
+    <!-- ─────────── MODAL FORMULARIO ─────────── -->
+  <div id="modal-form" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,42,35,0.8); z-index:200; align-items:center; justify-content:center; padding:24px;">
+    <div style="background:white; max-width:600px; width:100%; padding:32px; border-radius:16px; max-height:90vh; overflow-y:auto; position:relative;">
+      <button onclick="cerrarModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-muted);">&times;</button>
+      <h2 style="font-size:24px; color:var(--navy); margin-bottom:8px;">Nueva Operación</h2>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:24px;">Ingresa los datos de la escritura.</p>
+      
+      <div style="display:grid; gap:16px;">
+        <div>
+          <label style="font-size:13px; font-weight:600; color:var(--text-main);">Municipio</label>
+          <select id="f-municipio" class="input-field" style="margin-top:4px;">
+            <option value="MERIDA">Mérida</option>
+            <option value="KANASIN">Kanasín</option>
+            <option value="CONKAL">Conkal</option>
+            <option value="UMAN">Umán</option>
+            <option value="PROGRESO">Progreso</option>
+            <option value="HUNUCMA">Hunucmá</option>
+            <option value="UCU">Ucú</option>
+          </select>
+        </div>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div>
+            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Precio de Venta ($)</label>
+            <input type="number" id="f-precio" class="input-field" style="margin-top:4px;" placeholder="Ej: 2500000">
+          </div>
+          <div>
+            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Valor Catastral ($)</label>
+            <input type="number" id="f-catastral" class="input-field" style="margin-top:4px;" placeholder="Ej: 500000">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div>
+            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Costo Original ($)</label>
+            <input type="number" id="f-costo" class="input-field" style="margin-top:4px;" placeholder="Ej: 1000000">
+          </div>
+          <div>
+            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Avalúo Pericial ($)</label>
+            <input type="number" id="f-avaluo" class="input-field" style="margin-top:4px;" placeholder="0 si no hay">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div>
+            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Fecha de Adquisición</label>
+            <input type="month" id="f-fecAdq" class="input-field" style="margin-top:4px;">
+          </div>
+          <div>
+            <label style="font-size:13px; font-weight:600; color:var(--text-main);">Fecha de Escritura</label>
+            <input type="month" id="f-fecVen" class="input-field" style="margin-top:4px;">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:24px; margin-top:8px;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer;">
+            <input type="checkbox" id="f-casa" onchange="toggleCopropiedad()"> ¿Aplicar exención Art. 93 (Casa Habitación)?
+          </label>
+        </div>
+
+        <div id="copropiedad-box" style="display:none; background:var(--snow); padding:16px; border-radius:12px; border:1px solid var(--border);">
+          <label style="font-size:13px; font-weight:600; color:var(--text-main);">Número de Enajenantes (Copropiedad)</label>
+          <input type="number" id="f-ne" class="input-field" style="margin-top:4px;" value="1" min="1" max="3">
+        </div>
+
+        <button class="btn-primary" style="width:100%; padding:16px; font-size:16px; margin-top:16px;" onclick="enviarCalculo()">Calcular Impuestos</button>
+      </div>
+    </div>
+  </div>
 
   <script>
+        function abrirModalForm() {
+      document.getElementById('modal-form').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-form').style.display = 'none';
+    }
+
+    function toggleCopropiedad() {
+      const checked = document.getElementById('f-casa').checked;
+      document.getElementById('copropiedad-box').style.display = checked ? 'block' : 'none';
+      if (!checked) document.getElementById('f-ne').value = 1;
+    }
+
+    function enviarCalculo() {
+      const email = localStorage.getItem('fc_email');
+      const payload = {
+        email: email,
+        municipio: document.getElementById('f-municipio').value,
+        precioVenta: document.getElementById('f-precio').value,
+        valorCatastral: document.getElementById('f-catastral').value,
+        costoOriginal: document.getElementById('f-costo').value,
+        avaluoPericial: document.getElementById('f-avaluo').value || 0,
+        mesAdquisicion: document.getElementById('f-fecAdq').value.split('-')[1],
+        añoAdquisicion: document.getElementById('f-fecAdq').value.split('-')[0],
+        mesVenta: document.getElementById('f-fecVen').value.split('-')[1],
+        añoVenta: document.getElementById('f-fecVen').value.split('-')[0],
+        esCasaHabitacion: document.getElementById('f-casa').checked,
+        numeroEnajenantes: document.getElementById('f-ne').value || 1,
+        deduccionesOriginales: 0,
+        tieneDesglose: false
+      };
+
+      if (!payload.precioVenta || !payload.catastral || !payload.costo) {
+        alert('Por favor completa los campos obligatorios.');
+        return;
+      }
+
+      // Enviar a Apps Script
+      var callbackName = 'cb_calc_' + Date.now();
+      var script = document.createElement('script');
+      
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        
+        if (data.success) {
+          cerrarModal();
+          // Redirigir a la pantalla de procesando
+          window.location.href = '?resultId=' + data.requestID;
+        } else {
+          alert(data.error || 'Error al calcular');
+        }
+      };
+
+      var url = APPS_SCRIPT_URL + '?action=calculate' + 
+                '&payload=' + encodeURIComponent(JSON.stringify(payload)) + 
+                '&callback=' + callbackName;
+      
+      script.src = url;
+      document.body.appendChild(script);
+    }
 
     // ⚠️ IMPORTANTE: Cambia esta URL por la de tu Apps Script
     var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQaOPVkYTYvLOq4Qgp_0fawAGUQJ5cYY0F3TyOPzo0MAtMuu0MLlzzf3MTV5Rl8p0N/exec';
