@@ -851,7 +851,27 @@
     }
 
     // ── AL CARGAR LA PÁGINA, REVISAR SI YA HAY SESIÓN ──
-    window.onload = function() {
+        window.onload = function() {
+      const params = new URLSearchParams(window.location.search);
+      const urlResultId = params.get('resultId');
+
+      // 1. Si hay un resultId en la URL, mostrar la pantalla de espera y empezar a consultar
+      if (urlResultId) {
+        resultId = urlResultId;
+        document.getElementById('view-landing').style.display = 'none';
+        document.getElementById('view-workstation').style.display = 'none';
+        document.getElementById('vista-espera').style.display = 'block'; // Asumiendo que tienes este div de espera
+        
+        intervaloPasos = setInterval(function() {
+          if (pasoActual < PASOS.length - 1) pasoActual++;
+          actualizarPaso();
+        }, 7000);
+        
+        setTimeout(consultarEstado, 3000);
+        return;
+      }
+
+      // 2. Si no hay resultId, revisar sesión
       const savedEmail = localStorage.getItem('fc_email');
       const btn = document.getElementById('nav-auth-btn');
       if (savedEmail) {
