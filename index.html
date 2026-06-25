@@ -756,31 +756,47 @@
         return;
       }
 
-      const btn = document.querySelector('#modal-form button.btn-primary');
-      btn.innerText = 'Calculando...';
-      btn.disabled = true;
+      // 1. Cerrar el modal y mostrar el Stepper INMEDIATAMENTE
+      cerrarModal();
+      // Iniciar el stepper visual sin requestID todavía
+      resultIdActual = ''; // Limpiar por si acaso
+      intentos = 0;
+      pasoActual = 0;
+      mostrarVistaWS('ws-espera');
+      var stepperHtml = PASOS.map(function(p, i) {
+        return '<div id="step-'+i+'" style="display:flex; align-items:center; gap:12px; margin-bottom:16px; opacity:0.4; transition:opacity 0.3s;">' +
+               '<div style="width:24px; height:24px; border-radius:50%; border:2px solid #E2E8F0; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748B;">' + (i+1) + '</div>' +
+               '<span style="font-size:14px; color:#1E293B;">' + p + '</span>' +
+               '</div>';
+      }).join('');
+      document.getElementById('stepper-container').innerHTML = stepperHtml;
+      activarPaso(0);
+      intervaloPasos = setInterval(function() {
+        if (pasoActual < PASOS.length - 1) { pasoActual++; activarPaso(pasoActual); }
+      }, 8000);
 
+      // 2. Enviar la petición a Apps Script en segundo plano
       var callbackName = 'cb_calc_' + Date.now();
       var script = document.createElement('script');
       
       window[callbackName] = function(data) {
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
-        
-        btn.innerText = 'Calcular Impuestos';
-        btn.disabled = false;
 
         if (data.success) {
-          cerrarModal();
           // Si tenía saldo, descontarlo de la UI local
           let saldoActual = parseInt(localStorage.getItem('fc_saldo') || 0);
           if (saldoActual > 0) {
             localStorage.setItem('fc_saldo', saldoActual - 1);
             document.querySelector('.saldo-sidebar .num').innerText = saldoActual - 1;
           }
-          // Iniciar procesamiento en la misma pantalla
-          iniciarProcesamientoWS(data.requestID);
+          
+          // Guardar el ID y empezar a preguntar si ya está listo
+          resultIdActual = data.requestID;
+          setTimeout(consultarEstadoWS, 1000);
         } else {
+          clearInterval(intervaloPasos);
+          mostrarVistaWS('ws-inicio');
           alert(data.error || 'Error al calcular. Verifica tus datos.');
         }
       };
