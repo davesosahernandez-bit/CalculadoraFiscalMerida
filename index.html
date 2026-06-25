@@ -683,6 +683,66 @@
   </div>
 
   <script>
+        function iniciarPago(priceId) {
+      // Si estamos en una pantalla de bloqueo, mostramos el mensaje de espera
+      const pagoPendiente = document.getElementById('pago-pendiente');
+      if (pagoPendiente) pagoPendiente.style.display = 'block';
+      
+      var callbackName = 'cb_pay_' + Date.now();
+      var script = document.createElement('script');
+
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+
+        if (data.url) {
+          // Abrir Stripe en nueva pestaña
+          window.open(data.url, '_blank');
+          
+          // Empezar a preguntar cada 5 segundos si el saldo ya aumentó
+          setTimeout(verificarRecargaSaldo, 5000);
+        } else {
+          alert('Error de Stripe: ' + (data.error || 'Desconocido'));
+          if (pagoPendiente) pagoPendiente.style.display = 'none';
+        }
+      };
+
+      script.src = APPS_SCRIPT_URL + '?action=pay&resultId=' + encodeURIComponent(resultIdActual) + '&priceId=' + encodeURIComponent(priceId) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    // Nueva función para verificar si el saldo subió
+    function verificarRecargaSaldo() {
+      var email = localStorage.getItem('fc_email');
+      if (!email) return;
+
+      var callbackName = 'cb_check_saldo_' + Date.now();
+      var script = document.createElement('script');
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        
+        if (data.success) {
+          let saldoGuardado = parseInt(localStorage.getItem('fc_saldo') || 0);
+          // Si el saldo del backend es mayor al que teníamos, significa que ya pagó
+          if (data.saldo > saldoGuardado) {
+            localStorage.setItem('fc_saldo', data.saldo);
+            document.querySelector('.saldo-sidebar .num').innerText = data.saldo;
+            evaluarSaldoUI(); // Rehabilitar el botón de calcular
+            
+            // Si estábamos en la pantalla de bloqueo, intentar abrir el cálculo de nuevo
+            if (document.getElementById('ws-bloqueado').style.display === 'block' && resultIdActual) {
+              abrirHistorialItem(resultIdActual);
+            }
+          } else {
+            // Aún no ha pagado, seguir preguntando cada 5s
+            setTimeout(verificarRecargaSaldo, 5000);
+          }
+        }
+      };
+      script.src = APPS_SCRIPT_URL + '?action=checkSaldo&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
         function irAInicio() {
       if (localStorage.getItem('fc_email')) {
         showView('workstation');
