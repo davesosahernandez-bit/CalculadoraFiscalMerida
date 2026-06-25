@@ -496,9 +496,9 @@
       <!-- Vista: Espera -->
       <div id="ws-espera" style="display: none; text-align: center; padding-top: 40px;">
         <div style="max-width: 400px; margin: 0 auto;">
-          <h3 style="font-size: 22px; color: var(--navy); margin-bottom: 32px;">Procesando tu cálculo...</h3>
+          <h3 id="ws-espera-title" style="font-size: 22px; color: var(--navy); margin-bottom: 32px;">Procesando tu cálculo...</h3>
           <div id="stepper-container" style="text-align: left;"></div>
-          <p style="font-size: 12px; color: var(--text-muted); margin-top: 32px;">Esto tarda menos de 1 minuto. No cierres esta ventana.</p>
+          <p id="ws-espera-foot" style="font-size: 12px; color: var(--text-muted); margin-top: 32px;">Esto tarda menos de 1 minuto. No cierres esta ventana.</p>
         </div>
       </div>
 
@@ -829,11 +829,16 @@
       document.body.appendChild(script);
     }
 
-       function abrirHistorialItem(id) {
+    function abrirHistorialItem(id) {
       resultIdActual = id;
       intentos = 0;
       mostrarVistaWS('ws-espera');
-      // Mostrar un cargando simple, no el stepper de 5 pasos
+      
+      // Ocultar el título y pie de página de la espera normal
+      document.getElementById('ws-espera-title').style.display = 'none';
+      document.getElementById('ws-espera-foot').style.display = 'none';
+      
+      // Mostrar solo el mensaje de cargando
       document.getElementById('stepper-container').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:40px 0;">Cargando resultado...</div>';
       clearInterval(intervaloPasos); // Detener cualquier stepper previo
       setTimeout(consultarEstadoWS, 500);
@@ -924,6 +929,9 @@
 
       // 1. Cerrar el modal y mostrar el Stepper INMEDIATAMENTE
       cerrarModal();
+       // Restaurar título y pie de página para cálculo nuevo
+      document.getElementById('ws-espera-title').style.display = 'block';
+      document.getElementById('ws-espera-foot').style.display = 'block';
       // Iniciar el stepper visual sin requestID todavía
       resultIdActual = ''; // Limpiar por si acaso
       intentos = 0;
@@ -980,6 +988,9 @@
       intentos = 0;
       pasoActual = 0;
       mostrarVistaWS('ws-espera');
+      // Restaurar título y pie de página
+      document.getElementById('ws-espera-title').style.display = 'block';
+      document.getElementById('ws-espera-foot').style.display = 'block';
       
       // Inicializar stepper visual
       var stepperHtml = PASOS.map(function(p, i) {
