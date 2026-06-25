@@ -730,7 +730,7 @@
   </div>
 
   <script>
-            var selectedBundlePrice = null;
+    var selectedBundlePrice = null;
     var recargaInterval;
 
     function abrirModalRecarga() {
@@ -781,8 +781,8 @@
           document.getElementById('recarga-waiting').style.display = 'none';
         }
       };
-      script.src = APPS_SCRIPT_URL + '?action=pay&resultId=' + encodeURIComponent(resultIdActual || 'recarga') + '&priceId=' + encodeURIComponent(selectedBundlePrice) + '&callback=' + callbackName;
-      document.body.appendChild(script);
+            var emailUser = localStorage.getItem('fc_email') || '';
+      script.src = APPS_SCRIPT_URL + '?action=pay&email=' + encodeURIComponent(emailUser) + '&resultId=' + encodeURIComponent(resultIdActual || 'recarga') + '&priceId=' + encodeURIComponent(selectedBundlePrice) + '&callback=' + callbackName;
     }
 
     function verificarRecargaSaldo() {
