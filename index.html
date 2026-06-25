@@ -255,7 +255,7 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <a class="logo-container" onclick="showView('landing')">
+    <a class="logo-container" onclick="irAInicio()">
       <div class="logo-icon">
         <svg class="icon" style="color: var(--blue); stroke-width: 3;" viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg>
       </div>
@@ -502,14 +502,21 @@
         </div>
       </div>
 
-      <!-- Vista: Resultado -->
+            <!-- Vista: Resultado -->
       <div id="ws-resultado" style="display: none;">
         <div class="meta" id="meta-resultado" style="font-size: 13px; color: #666; margin-bottom: 16px;"></div>
-        <div id="aviso-saldo"></div>
-        <div style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap;">
-          <a id="btn-pdf" href="#" target="_blank" download="FiscalCheck_Reporte.pdf" class="btn-primary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#0F2A23;">⬇️ Descargar PDF</a>
-          <a id="btn-wa" href="#" target="_blank" class="btn-secondary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#25D366; color:white;">💬 Compartir por WhatsApp</a>
+        
+        <div style="display: flex; gap: 12px; margin: 20px 0 32px; flex-wrap: wrap;">
+          <a id="btn-pdf" href="#" target="_blank" download="FiscalCheck_Reporte.pdf" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#0F2A23; color:white; padding:14px 20px; border-radius:10px; font-weight:600; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Descargar PDF
+          </a>
+          <a id="btn-wa" href="#" target="_blank" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#25D366; color:white; padding:14px 20px; border-radius:10px; font-weight:600; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            Compartir por WhatsApp
+          </a>
         </div>
+        
         <div id="cuerpo-resultado"></div>
         <div class="disclaimer" id="disclaimer-texto" style="font-size: 11px; color: #999; margin-top: 24px; padding: 12px; background: #f9f9f9; border-radius: 6px; line-height: 1.6;"></div>
       </div>
@@ -676,6 +683,14 @@
   </div>
 
   <script>
+        function irAInicio() {
+      if (localStorage.getItem('fc_email')) {
+        showView('workstation');
+        cambiarVistaWS('ws-inicio', document.querySelector('.sidebar-item'));
+      } else {
+        showView('landing');
+      }
+    }
         function evaluarSaldoUI() {
       let saldo = parseInt(localStorage.getItem('fc_saldo') || 0);
       const btn = document.getElementById('btn-iniciar-op');
@@ -814,25 +829,21 @@
       document.body.appendChild(script);
     }
 
-    function abrirHistorialItem(id) {
+       function abrirHistorialItem(id) {
       resultIdActual = id;
       intentos = 0;
       mostrarVistaWS('ws-espera');
-      consultarEstadoWS(); // Reutiliza el polling para ver si está bloqueado o listo
+      // Mostrar un cargando simple, no el stepper de 5 pasos
+      document.getElementById('stepper-container').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:40px 0;">Cargando resultado...</div>';
+      clearInterval(intervaloPasos); // Detener cualquier stepper previo
+      setTimeout(consultarEstadoWS, 500);
     }
 
     function renderizarResultadoWS(d) {
       var r = d.resultado;
       document.getElementById('meta-resultado').innerHTML = '<strong>Municipio:</strong> ' + (r.municipio || '') + ' &nbsp;|&nbsp; <strong>Fecha:</strong> ' + (r.fechaCalculo || '');
       
-      var saldo = d.saldoRestante;
-      var avisoHtml = '';
-      if (saldo <= 1) {
-        // Aviso simple sin botón de recarga (ya está en el sidebar)
-        avisoHtml = '<div style="background:#fff5f5; border-left:4px solid #EF4444; color:#c53030; padding:14px 16px; border-radius:8px; margin:16px 0; font-size:13px;">' +
-                    '<strong>Tus créditos están por agotarse ('+saldo+' restante).</strong><br><small>Recarga en el menú lateral para evitar interrupciones.</small></div>';
-      }
-      document.getElementById('aviso-saldo').innerHTML = avisoHtml;
+      document.getElementById('aviso-saldo').innerHTML = '';
 
       document.getElementById('btn-pdf').href = r.urlPDF || '#';
       var msgWA = '📊 *Estimación Fiscal FiscalCheck*\n' +
@@ -1209,27 +1220,18 @@ function renderizarResultadoWS(d) {
     }
 
     // ── AL CARGAR LA PÁGINA, REVISAR SI YA HAY SESIÓN ──
-    window.onload = function() {
-      const params = new URLSearchParams(window.location.search);
-      const urlResultId = params.get('resultId');
+        window.onload = function() {
       const savedEmail = localStorage.getItem('fc_email');
       const btn = document.getElementById('nav-auth-btn');
       
       if (savedEmail) {
-        // Si hay sesión, ir a la Workstation
         const savedSaldo = localStorage.getItem('fc_saldo') || 0;
         document.querySelector('.saldo-sidebar .num').innerText = savedSaldo;
         btn.innerText = 'Cerrar Sesión';
         showView('workstation');
-        evaluarSaldoUI(); 
-        // Si viene de un cálculo (hay resultId en la URL), mostrar el stepper de espera
-        if (urlResultId) {
-          iniciarProcesamientoWS(urlResultId);
-        } else {
-          mostrarVistaWS('ws-inicio');
-        }
+        cambiarVistaWS('ws-inicio', document.querySelector('.sidebar-item'));
+        evaluarSaldoUI();
       } else {
-        // Si no hay sesión, ir a la Landing
         btn.innerText = 'Iniciar Sesión';
         showView('landing');
       }
