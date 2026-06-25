@@ -473,7 +473,7 @@
         <div class="num">5</div>
         <div class="txt">Créditos disponibles</div>
       </div>
-      <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 14px;" onclick="iniciarPago('price_1TiSwxFV952RaBCC2cffZu1x')">Recargar Saldo</button>
+      <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 14px;" onclick="abrirModalRecarga()">Recargar Saldo</button>
     </div>
 
     <div class="ws-content">
@@ -522,15 +522,12 @@
       </div>
 
       <!-- Vista: Bloqueado -->
+           <!-- Vista: Bloqueado -->
       <div id="ws-bloqueado" style="display: none; text-align: center; padding-top: 40px;">
         <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
         <h3 style="font-size: 22px; color: var(--navy); margin-bottom: 12px;">Tu cálculo está listo.<br>Desbloquéalo recargando.</h3>
         <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">Tu operación fue procesada exitosamente.<br>Recarga créditos para acceder al resultado completo.</p>
-        <div style="justify-content:center; display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn-primary" onclick="iniciarPago('price_1TiSwxFV952RaBCC2cffZu1x')">5 cálculos — $99 MXN</button>
-          <button class="btn-primary" onclick="iniciarPago('price_1TiSxLFV952RaBCCOHe8GkbJ')">20 cálculos — $299 MXN</button>
-        </div>
-        <p style="font-size:12px; color:var(--blue); margin-top:16px; display:none;" id="pago-pendiente">⏳ Pestaña de pago abierta. Esta pantalla se actualizará automáticamente al completar el pago.</p>
+        <button class="btn-primary" onclick="abrirModalRecarga()" style="padding: 12px 32px;">Recargar Créditos</button>
       </div>
 
       <!-- Vista: Historial -->
@@ -660,6 +657,56 @@
       </div>
     </div>
   </div>
+    <!-- ─────────── MODAL RECARGA ─────────── -->
+  <div id="modal-recarga" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,42,35,0.8); z-index:200; align-items:center; justify-content:center; padding:24px;">
+    <div style="background:white; max-width:450px; width:100%; padding:32px; border-radius:16px; position:relative;">
+      <button onclick="cerrarModalRecarga()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:#64748B;">&times;</button>
+      
+      <div id="recarga-content">
+        <h2 style="font-size:22px; color:#0F2A23; margin-bottom:8px; text-align:center;">Recargar Créditos</h2>
+        <p style="font-size:14px; color:#64748B; margin-bottom:24px; text-align:center;">Selecciona el paquete que necesitas.</p>
+        
+        <div style="display:flex; gap:16px; margin-bottom:32px;">
+          <div onclick="seleccionarBundle('price_1TiSwxFV952RaBCC2cffZu1x', this)" id="bundle-5" style="flex:1; border:2px solid #E2E8F0; border-radius:12px; padding:20px 16px; cursor:pointer; transition:all 0.2s; text-align:center;">
+            <div style="font-size:32px; font-weight:800; color:#0F2A23;">5</div>
+            <div style="font-size:12px; color:#64748B; margin-bottom:8px;">Cálculos</div>
+            <div style="font-weight:700; color:#10B981;">$99 MXN</div>
+          </div>
+          <div onclick="seleccionarBundle('price_1TiSxLFV952RaBCCOHe8GkbJ', this)" id="bundle-20" style="flex:1; border:2px solid #E2E8F0; border-radius:12px; padding:20px 16px; cursor:pointer; transition:all 0.2s; position:relative; text-align:center;">
+            <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:#10B981; color:white; padding:2px 12px; border-radius:10px; font-size:10px; font-weight:600;">POPULAR</div>
+            <div style="font-size:32px; font-weight:800; color:#0F2A23;">20</div>
+            <div style="font-size:12px; color:#64748B; margin-bottom:8px;">Cálculos</div>
+            <div style="font-weight:700; color:#10B981;">$299 MXN</div>
+          </div>
+        </div>
+
+        <div style="text-align:left; margin-bottom:24px;">
+          <p style="font-size:13px; font-weight:600; color:#1E293B; margin-bottom:12px;">Método de pago</p>
+          
+          <button onclick="iniciarPagoPopup()" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border:1px solid #E2E8F0; border-radius:10px; margin-bottom:8px; cursor:pointer; background:white; transition:all 0.2s;">
+            <span style="display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; color:#1E293B;">💳 Tarjeta (Stripe)</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </button>
+
+          <button disabled style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border:1px solid #E2E8F0; border-radius:10px; margin-bottom:8px; cursor:not-allowed; background:#F8FAFC; opacity:0.6;">
+            <span style="display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; color:#1E293B;">🅿️ PayPal</span>
+            <span style="font-size:10px; color:#64748B; background:#E2E8F0; padding:2px 8px; border-radius:10px;">PRÓXIMAMENTE</span>
+          </button>
+
+          <button disabled style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border:1px solid #E2E8F0; border-radius:10px; cursor:not-allowed; background:#F8FAFC; opacity:0.6;">
+            <span style="display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; color:#1E293B;"> MercadoPago</span>
+            <span style="font-size:10px; color:#64748B; background:#E2E8F0; padding:2px 8px; border-radius:10px;">PRÓXIMAMENTE</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="recarga-waiting" style="display:none; padding:40px 0; text-align:center;">
+        <div style="border:4px solid #E2E8F0; border-top:4px solid #10B981; border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite; margin:0 auto 16px;"></div>
+        <p style="font-size:14px; color:#64748B;">Esperando confirmación de pago...<br><small>La ventana se cerrará automáticamente.</small></p>
+      </div>
+      <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    </div>
+  </div>
     <!-- ─────────── MODAL AUTENTICACIÓN ─────────── -->
   <div id="modal-auth" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,42,35,0.8); z-index:200; align-items:center; justify-content:center; padding:24px;">
     <div style="background:white; max-width:400px; width:100%; padding:32px; border-radius:16px; text-align:center; position:relative;">
@@ -683,35 +730,61 @@
   </div>
 
   <script>
-        function iniciarPago(priceId) {
-      // Si estamos en una pantalla de bloqueo, mostramos el mensaje de espera
-      const pagoPendiente = document.getElementById('pago-pendiente');
-      if (pagoPendiente) pagoPendiente.style.display = 'block';
-      
+            var selectedBundlePrice = null;
+    var recargaInterval;
+
+    function abrirModalRecarga() {
+      selectedBundlePrice = null;
+      document.getElementById('bundle-5').style.borderColor = '#E2E8F0';
+      document.getElementById('bundle-20').style.borderColor = '#E2E8F0';
+      document.getElementById('recarga-content').style.display = 'block';
+      document.getElementById('recarga-waiting').style.display = 'none';
+      document.getElementById('modal-recarga').style.display = 'flex';
+    }
+
+    function cerrarModalRecarga() {
+      document.getElementById('modal-recarga').style.display = 'none';
+      clearInterval(recargaInterval);
+    }
+
+    function seleccionarBundle(priceId, el) {
+      selectedBundlePrice = priceId;
+      document.getElementById('bundle-5').style.borderColor = '#E2E8F0';
+      document.getElementById('bundle-20').style.borderColor = '#E2E8F0';
+      el.style.borderColor = '#10B981';
+    }
+
+    function iniciarPagoPopup() {
+      if (!selectedBundlePrice) {
+        alert('Por favor, selecciona un paquete de créditos.');
+        return;
+      }
+
+      // Cambiar vista del modal a "esperando"
+      document.getElementById('recarga-content').style.display = 'none';
+      document.getElementById('recarga-waiting').style.display = 'block';
+
       var callbackName = 'cb_pay_' + Date.now();
       var script = document.createElement('script');
-
       window[callbackName] = function(data) {
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
 
         if (data.url) {
-          // Abrir Stripe en nueva pestaña
-          window.open(data.url, '_blank');
-          
-          // Empezar a preguntar cada 5 segundos si el saldo ya aumentó
-          setTimeout(verificarRecargaSaldo, 5000);
+          // Abrir Popup flotante
+          window.open(data.url, 'stripePopup', 'width=500,height=700,scrollbars=no');
+          // Empezar a verificar el saldo cada 3 segundos
+          recargaInterval = setInterval(verificarRecargaSaldo, 3000);
         } else {
           alert('Error de Stripe: ' + (data.error || 'Desconocido'));
-          if (pagoPendiente) pagoPendiente.style.display = 'none';
+          document.getElementById('recarga-content').style.display = 'block';
+          document.getElementById('recarga-waiting').style.display = 'none';
         }
       };
-
-      script.src = APPS_SCRIPT_URL + '?action=pay&resultId=' + encodeURIComponent(resultIdActual) + '&priceId=' + encodeURIComponent(priceId) + '&callback=' + callbackName;
+      script.src = APPS_SCRIPT_URL + '?action=pay&resultId=' + encodeURIComponent(resultIdActual || 'recarga') + '&priceId=' + encodeURIComponent(selectedBundlePrice) + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
 
-    // Nueva función para verificar si el saldo subió
     function verificarRecargaSaldo() {
       var email = localStorage.getItem('fc_email');
       if (!email) return;
@@ -724,19 +797,19 @@
         
         if (data.success) {
           let saldoGuardado = parseInt(localStorage.getItem('fc_saldo') || 0);
-          // Si el saldo del backend es mayor al que teníamos, significa que ya pagó
           if (data.saldo > saldoGuardado) {
+            // ¡Pago confirmado!
+            clearInterval(recargaInterval);
             localStorage.setItem('fc_saldo', data.saldo);
             document.querySelector('.saldo-sidebar .num').innerText = data.saldo;
-            evaluarSaldoUI(); // Rehabilitar el botón de calcular
+            evaluarSaldoUI(); 
             
-            // Si estábamos en la pantalla de bloqueo, intentar abrir el cálculo de nuevo
+            cerrarModalRecarga();
+            
+            // Si estaba viendo un cálculo bloqueado, desbloquearlo
             if (document.getElementById('ws-bloqueado').style.display === 'block' && resultIdActual) {
               abrirHistorialItem(resultIdActual);
             }
-          } else {
-            // Aún no ha pagado, seguir preguntando cada 5s
-            setTimeout(verificarRecargaSaldo, 5000);
           }
         }
       };
