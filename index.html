@@ -476,15 +476,53 @@
       <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 14px;">Recargar Saldo</button>
     </div>
 
-    <div class="ws-content">
+        <div class="ws-content">
       <div class="ws-header">
-        <h2 class="ws-title">Bienvenido a tu Workstation</h2>
+        <h2 class="ws-title">Tu Estación de Trabajo</h2>
       </div>
-      <p style="color: var(--text-muted); margin-bottom: 32px;">Desde aquí puedes iniciar nuevos cálculos, ver tu historial y gestionar tus créditos.</p>
-            <button class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;" onclick="abrirModalForm()">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        Iniciar Nueva Operación
-      </button>
+      
+      <!-- Vista: Inicio -->
+      <div id="ws-inicio">
+        <p style="color: var(--text-muted); margin-bottom: 32px;">Desde aquí puedes iniciar nuevos cálculos, ver tu historial y gestionar tus créditos.</p>
+        <button class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;" onclick="abrirModalForm()">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Iniciar Nueva Operación
+        </button>
+      </div>
+
+      <!-- Vista: Espera (Stepper Animado) -->
+      <div id="ws-espera" style="display: none; text-align: center; padding-top: 40px;">
+        <div style="max-width: 400px; margin: 0 auto;">
+          <h3 style="font-size: 22px; color: var(--navy); margin-bottom: 32px;">Procesando tu cálculo...</h3>
+          <div id="stepper-container" style="text-align: left;"></div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 32px;">Esto tarda menos de 1 minuto. No cierres esta ventana.</p>
+        </div>
+      </div>
+
+      <!-- Vista: Resultado -->
+      <div id="ws-resultado" style="display: none;">
+        <div class="meta" id="meta-resultado" style="font-size: 13px; color: #666; margin-bottom: 16px;"></div>
+        <div id="aviso-saldo"></div>
+        <div style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap;">
+          <a id="btn-pdf" href="#" target="_blank" class="btn-primary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#0F2A23;">⬇️ Descargar PDF</a>
+          <a id="btn-wa"  href="#" target="_blank" class="btn-secondary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#25D366; color:white;">💬 Compartir por WhatsApp</a>
+        </div>
+        <div id="cuerpo-resultado"></div>
+        <div class="disclaimer" id="disclaimer-texto" style="font-size: 11px; color: #999; margin-top: 24px; padding: 12px; background: #f9f9f9; border-radius: 6px; line-height: 1.6;"></div>
+      </div>
+
+      <!-- Vista: Bloqueado -->
+      <div id="ws-bloqueado" style="display: none; text-align: center; padding-top: 40px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+        <h3 style="font-size: 22px; color: var(--navy); margin-bottom: 12px;">Tu cálculo está listo.<br>Desbloquéalo recargando.</h3>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">Tu operación fue procesada exitosamente.<br>Recarga créditos para acceder al resultado completo.</p>
+        <div style="justify-content:center; display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="iniciarPago('price_1TiSwxFV952RaBCC2cffZu1x')">5 cálculos — $99 MXN</button>
+          <button class="btn-primary" onclick="iniciarPago('price_1TiSxLFV952RaBCCOHe8GkbJ')">20 cálculos — $299 MXN</button>
+        </div>
+        <p style="font-size:12px; color:var(--blue); margin-top:16px; display:none;" id="pago-pendiente">⏳ Pestaña de pago abierta. Esta pantalla se actualizará automáticamente al completar el pago.</p>
+      </div>
+
     </div>
 
     <nav class="bottom-nav">
@@ -652,6 +690,24 @@
       input.value = parts.join('.');
     }
 
+    var PASOS = [
+      'Validando datos del formulario...',
+      'Consultando INPC en Banxico...',
+      'Calculando ISR Federal y Cedular...',
+      'Calculando ISAI y derechos INSEJUPY...',
+      'Generando tu reporte fiscal...'
+    ];
+    var pasoActual = 0;
+    var intervaloPasos;
+    var resultIdActual = '';
+    var intentos = 0;
+
+    function mostrarVistaWS(vista) {
+      ['ws-inicio', 'ws-espera', 'ws-resultado', 'ws-bloqueado'].forEach(function(v) {
+        document.getElementById(v).style.display = v === vista ? 'block' : 'none';
+      });
+    }
+
     function enviarCalculo() {
       const email = localStorage.getItem('fc_email');
       if (!email) { alert('Tu sesión expiró. Inicia sesión de nuevo.'); showView('landing'); return; }
@@ -662,10 +718,8 @@
       const fecAdq = document.getElementById('f-fecAdq').value;
       const fecVen = document.getElementById('f-fecVen').value;
 
-      // Limpiar comas de los números antes de enviarlos
       const cleanNum = (id) => document.getElementById(id).value.replace(/,/g, '');
 
-      // Calcular porcentajes si hay desglose
       let pctTerreno = 20, pctConstr = 80;
       if (tieneDesg) {
         let m2T = parseFloat(cleanNum('f-m2Ter')) || 0;
@@ -693,8 +747,6 @@
         mesErogacion: tieneDeducc && fecErog ? fecErog.split('-')[1] : null,
         añoErogacion: tieneDeducc && fecErog ? fecErog.split('-')[0] : null,
         tieneDesglose: tieneDesg,
-        m2Terreno: tieneDesg ? cleanNum('f-m2Ter') : 0,
-        m2Construccion: tieneDesg ? cleanNum('f-m2Const') : 0,
         pctTerreno: pctTerreno,
         pctConstr: pctConstr
       };
@@ -704,12 +756,10 @@
         return;
       }
 
-      // Cambiar botón a estado de carga
       const btn = document.querySelector('#modal-form button.btn-primary');
       btn.innerText = 'Calculando...';
       btn.disabled = true;
 
-      // Enviar a Apps Script
       var callbackName = 'cb_calc_' + Date.now();
       var script = document.createElement('script');
       
@@ -722,11 +772,14 @@
 
         if (data.success) {
           cerrarModal();
-          // Actualizar saldo en la UI
-          localStorage.setItem('fc_saldo', parseInt(localStorage.getItem('fc_saldo')) - 1);
-          document.querySelector('.saldo-sidebar .num').innerText = localStorage.getItem('fc_saldo');
-          // Ir a la pantalla de procesando
-          window.location.href = '?resultId=' + data.requestID;
+          // Si tenía saldo, descontarlo de la UI local
+          let saldoActual = parseInt(localStorage.getItem('fc_saldo') || 0);
+          if (saldoActual > 0) {
+            localStorage.setItem('fc_saldo', saldoActual - 1);
+            document.querySelector('.saldo-sidebar .num').innerText = saldoActual - 1;
+          }
+          // Iniciar procesamiento en la misma pantalla
+          iniciarProcesamientoWS(data.requestID);
         } else {
           alert(data.error || 'Error al calcular. Verifica tus datos.');
         }
@@ -738,6 +791,140 @@
       
       script.src = url;
       document.body.appendChild(script);
+    }
+
+    function iniciarProcesamientoWS(reqId) {
+      resultIdActual = reqId;
+      intentos = 0;
+      pasoActual = 0;
+      mostrarVistaWS('ws-espera');
+      
+      // Inicializar stepper visual
+      var stepperHtml = PASOS.map(function(p, i) {
+        return '<div id="step-'+i+'" style="display:flex; align-items:center; gap:12px; margin-bottom:16px; opacity:0.4; transition:opacity 0.3s;">' +
+               '<div style="width:24px; height:24px; border-radius:50%; border:2px solid #E2E8F0; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748B;">' + (i+1) + '</div>' +
+               '<span style="font-size:14px; color:#1E293B;">' + p + '</span>' +
+               '</div>';
+      }).join('');
+      document.getElementById('stepper-container').innerHTML = stepperHtml;
+      activarPaso(0);
+      
+      intervaloPasos = setInterval(function() {
+        if (pasoActual < PASOS.length - 1) {
+          pasoActual++;
+          activarPaso(pasoActual);
+        }
+      }, 8000);
+
+      setTimeout(consultarEstadoWS, 3000);
+    }
+
+    function activarPaso(idx) {
+      for (var i = 0; i < PASOS.length; i++) {
+        var el = document.getElementById('step-'+i);
+        if (!el) continue;
+        if (i < idx) {
+          el.style.opacity = '1';
+          el.querySelector('div').style.background = '#10B981';
+          el.querySelector('div').style.borderColor = '#10B981';
+          el.querySelector('div').style.color = 'white';
+          el.querySelector('div').innerHTML = '✓';
+        } else if (i === idx) {
+          el.style.opacity = '1';
+          el.querySelector('div').style.borderColor = '#10B981';
+          el.querySelector('div').style.color = '#10B981';
+        } else {
+          el.style.opacity = '0.4';
+          el.querySelector('div').style.background = 'white';
+          el.querySelector('div').style.borderColor = '#E2E8F0';
+          el.querySelector('div').style.color = '#64748B';
+          el.querySelector('div').innerHTML = (i+1);
+        }
+      }
+    }
+
+    function consultarEstadoWS() {
+      intentos++;
+      if (intentos > 20) {
+        mostrarVistaWS('ws-inicio');
+        alert('El cálculo está tomando más tiempo de lo esperado. Intenta más tarde.');
+        return;
+      }
+
+      var callbackName = 'cb_status_' + Date.now();
+      var script = document.createElement('script');
+
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+
+        if (data.estado === 'LISTO') {
+          clearInterval(intervaloPasos);
+          renderizarResultadoWS(data);
+        } else if (data.estado === 'BLOQUEADO_SALDO') {
+          clearInterval(intervaloPasos);
+          mostrarVistaWS('ws-bloqueado');
+          setTimeout(consultarEstadoWS, 5000); // Seguir preguntando por si paga
+        } else {
+          setTimeout(consultarEstadoWS, 5000);
+        }
+      };
+
+      script.src = APPS_SCRIPT_URL + '?action=status&resultId=' + encodeURIComponent(resultIdActual) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    function renderizarResultadoWS(d) {
+      var r = d.resultado;
+      document.getElementById('meta-resultado').innerHTML = '<strong>Municipio:</strong> ' + (r.municipio || '') + ' &nbsp;|&nbsp; <strong>Fecha:</strong> ' + (r.fechaCalculo || '');
+      
+      var saldo = d.saldoRestante;
+      var avisoHtml = '';
+      if (saldo <= 1) {
+        avisoHtml = '<div style="background:#fff5f5; border-left:4px solid #EF4444; color:#c53030; padding:14px 16px; border-radius:8px; margin:16px 0; font-size:13px;">' +
+                    '<strong>Tus créditos están por agotarse ('+saldo+' restante).</strong><br><small>Recarga para evitar interrupciones.</small>' +
+                    '<div style="margin-top:10px; display:flex; gap:8px;">' +
+                    '<button class="btn-primary" style="padding:8px 16px; font-size:13px;" onclick="iniciarPago(\'price_1TiSwxFV952RaBCC2cffZu1x\')">5 cálculos — $99</button>' +
+                    '</div></div>';
+      }
+      document.getElementById('aviso-saldo').innerHTML = avisoHtml;
+
+      document.getElementById('btn-pdf').href = r.urlPDF || '#';
+      var msgWA = '📊 *Estimación Fiscal FiscalCheck*\n' +
+                  'Municipio: ' + (r.municipio || '') + '\n' +
+                  '*Total Vendedor:* $' + (r.totalVendedor || 0).toFixed(2) + '\n' +
+                  '*Total Comprador:* $' + (r.totalComprador || 0).toFixed(2) + '\n\n' +
+                  '🔗 Ver detalle completo:\n' + window.location.href;
+      document.getElementById('btn-wa').href = 'https://wa.me/?text=' + encodeURIComponent(msgWA);
+
+      var html = '';
+      html += '<h2 style="font-size:15px; font-weight:700; margin:24px 0 8px; color:#0F2A23; text-transform:uppercase;">Vendedor</h2>';
+      html += filaWS('Costo actualizado', fmtWS(r.costoActualizado));
+      html += filaWS('Ganancia total', fmtWS(r.gananciaTotal));
+      if (r.esCasaHabitacion) html += filaWS('Límite exención Art. 93', fmtWS(r.limiteExencionPesos));
+      html += filaWS('Ganancia gravable', fmtWS(r.gananciaGravable));
+      html += filaWS('ISR Federal (Art. 126)', fmtWS(r.ISRFederal));
+      html += filaWS('Cedular Yucatán (5%)', fmtWS(r.impuestoCedular));
+      html += '<div style="display:flex; justify-content:space-between; padding:12px 0; font-size:18px; font-weight:700; color:#10B981; border-top:2px solid #E2E8F0; margin-top:4px;"><span>Total Vendedor</span><span>' + fmtWS(r.totalVendedor) + '</span></div>';
+
+      html += '<h2 style="font-size:15px; font-weight:700; margin:24px 0 8px; color:#0F2A23; text-transform:uppercase;">Comprador</h2>';
+      html += filaWS('Base ISAI', fmtWS(r.baseISAI));
+      html += filaWS('ISAI ' + (r.municipio || ''), fmtWS(r.ISAI));
+      html += filaWS('INSEJUPY (12.70 UMAs)', fmtWS(r.derechosINSEJUPY));
+      html += '<div style="display:flex; justify-content:space-between; padding:12px 0; font-size:18px; font-weight:700; color:#0F2A23; border-top:2px solid #E2E8F0; margin-top:4px;"><span>Total Comprador</span><span>' + fmtWS(r.totalComprador) + '</span></div>';
+
+      document.getElementById('cuerpo-resultado').innerHTML = html;
+      document.getElementById('disclaimer-texto').textContent = r.disclaimer || '';
+      mostrarVistaWS('ws-resultado');
+    }
+
+    function filaWS(label, valor) {
+      return '<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0; font-size:14px;"><span style="color:#555;">' + label + '</span><span style="font-weight:600; color:#1E293B;">' + valor + '</span></div>';
+    }
+
+    function fmtWS(val) {
+      if (val === undefined || val === null || isNaN(val)) return '$0.00';
+      return '$' + parseFloat(val).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
     // ⚠️ IMPORTANTE: Cambia esta URL por la de tu Apps Script
