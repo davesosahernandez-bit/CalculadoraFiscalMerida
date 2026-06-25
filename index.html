@@ -481,13 +481,16 @@
         <h2 class="ws-title" id="ws-title">Tu Estación de Trabajo</h2>
       </div>
       
-      <!-- Vista: Inicio -->
+           <!-- Vista: Inicio -->
       <div id="ws-inicio">
         <p style="color: var(--text-muted); margin-bottom: 32px;">Desde aquí puedes iniciar nuevos cálculos, ver tu historial y gestionar tus créditos.</p>
-        <button class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;" onclick="abrirModalForm()">
+        <button id="btn-iniciar-op" class="btn-primary" style="width: 100%; padding: 20px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;" onclick="validarInicioOperacion()">
           <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Iniciar Nueva Operación
         </button>
+        <div id="sin-saldo-aviso" style="display:none; text-align:center; margin-top:16px; color:#EF4444; font-weight:600;">
+          No tienes créditos disponibles. Recarga saldo en el menú lateral para continuar.
+        </div>
       </div>
 
       <!-- Vista: Espera -->
@@ -504,7 +507,7 @@
         <div class="meta" id="meta-resultado" style="font-size: 13px; color: #666; margin-bottom: 16px;"></div>
         <div id="aviso-saldo"></div>
         <div style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap;">
-          <a id="btn-pdf" href="#" target="_blank" class="btn-primary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#0F2A23;">⬇️ Descargar PDF</a>
+          <a id="btn-pdf" href="#" target="_blank" download="FiscalCheck_Reporte.pdf" class="btn-primary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#0F2A23;">⬇️ Descargar PDF</a>
           <a id="btn-wa" href="#" target="_blank" class="btn-secondary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#25D366; color:white;">💬 Compartir por WhatsApp</a>
         </div>
         <div id="cuerpo-resultado"></div>
@@ -673,6 +676,31 @@
   </div>
 
   <script>
+        function evaluarSaldoUI() {
+      let saldo = parseInt(localStorage.getItem('fc_saldo') || 0);
+      const btn = document.getElementById('btn-iniciar-op');
+      const aviso = document.getElementById('sin-saldo-aviso');
+      if (saldo <= 0) {
+        btn.style.background = '#94a3b8';
+        btn.style.cursor = 'not-allowed';
+        btn.setAttribute('onclick', 'alert("No tienes créditos disponibles. Por favor, recarga saldo para seguir calculando.")');
+        if(aviso) aviso.style.display = 'block';
+      } else {
+        btn.style.background = '#10B981';
+        btn.style.cursor = 'pointer';
+        btn.setAttribute('onclick', 'abrirModalForm()');
+        if(aviso) aviso.style.display = 'none';
+      }
+    }
+
+    function validarInicioOperacion() {
+      let saldo = parseInt(localStorage.getItem('fc_saldo') || 0);
+      if (saldo <= 0) {
+        alert("No tienes créditos disponibles. Por favor, recarga saldo para seguir calculando.");
+      } else {
+        abrirModalForm();
+      }
+    }
         function abrirModalForm() {
       document.getElementById('modal-form').style.display = 'flex';
     }
@@ -724,6 +752,7 @@
 
     function cambiarVistaWS(vista, el) {
       mostrarVistaWS(vista);
+      if(vista === 'ws-inicio') evaluarSaldoUI();
       // Actualizar active en sidebar
       document.querySelectorAll('.sidebar-item').forEach(function(i) { i.classList.remove('active'); });
       if(el) el.classList.add('active');
@@ -1022,10 +1051,12 @@ function renderizarResultadoWS(d) {
       
       var saldo = d.saldoRestante;
       var avisoHtml = '';
-      if (saldo <= 1) {
-        // Aviso simple sin botón de recarga (ya está en el sidebar)
+      if (saldo === 0) {
         avisoHtml = '<div style="background:#fff5f5; border-left:4px solid #EF4444; color:#c53030; padding:14px 16px; border-radius:8px; margin:16px 0; font-size:13px;">' +
-                    '<strong>Tus créditos están por agotarse ('+saldo+' restante).</strong><br><small>Recarga en el menú lateral para evitar interrupciones.</small></div>';
+                    '<strong>Tus créditos se han agotado.</strong><br><small>Recarga en el menú lateral para realizar tu próxima operación.</small></div>';
+      } else if (saldo === 1) {
+        avisoHtml = '<div style="background:#fff5f5; border-left:4px solid #EF4444; color:#c53030; padding:14px 16px; border-radius:8px; margin:16px 0; font-size:13px;">' +
+                    '<strong>Te queda 1 crédito disponible.</strong><br><small>Recarga en el menú lateral para evitar interrupciones.</small></div>';
       }
       document.getElementById('aviso-saldo').innerHTML = avisoHtml;
 
@@ -1190,7 +1221,7 @@ function renderizarResultadoWS(d) {
         document.querySelector('.saldo-sidebar .num').innerText = savedSaldo;
         btn.innerText = 'Cerrar Sesión';
         showView('workstation');
-        
+        evaluarSaldoUI(); 
         // Si viene de un cálculo (hay resultId en la URL), mostrar el stepper de espera
         if (urlResultId) {
           iniciarProcesamientoWS(urlResultId);
