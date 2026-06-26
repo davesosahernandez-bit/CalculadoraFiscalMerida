@@ -1376,7 +1376,24 @@ function renderizarResultadoWS(d) {
     }
 
     // ── AL CARGAR LA PÁGINA, REVISAR SI YA HAY SESIÓN ──
-        window.onload = function() {
+    window.onload = function() {
+      const params = new URLSearchParams(window.location.search);
+      const urlStatus = params.get('status');
+      
+      // 1. Si es la ventanita de pago exitoso, cerrarla
+      if (urlStatus === 'success') {
+        document.body.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#0F2A23; color:white; text-align:center; font-family:Inter, sans-serif;"><div style="font-size:48px; margin-bottom:16px;">✅</div><h2>¡Pago exitoso!</h2><p>Puedes cerrar esta ventana. Tu saldo se actualizó automáticamente.</p></div>';
+        setTimeout(function() { window.close(); }, 2000);
+        return;
+      }
+      if (urlStatus === 'cancel') {
+        document.body.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#0F2A23; color:white; text-align:center; font-family:Inter, sans-serif;"><div style="font-size:48px; margin-bottom:16px;">❌</div><h2>Pago cancelado</h2><p>Puedes cerrar esta ventana e intentarlo de nuevo.</p></div>';
+        setTimeout(function() { window.close(); }, 2000);
+        return;
+      }
+
+      // 2. Lógica normal al cargar la página
+      const urlResultId = params.get('resultId');
       const savedEmail = localStorage.getItem('fc_email');
       const btn = document.getElementById('nav-auth-btn');
       
