@@ -760,10 +760,19 @@
         return;
       }
 
-      // Cambiar vista del modal a "esperando"
+      // 1. Abrir ventanita VACÍA inmediatamente en el clic (evita que el navegador la bloquee)
+      var popup = window.open('', 'stripePopup', 'width=500,height=700,scrollbars=no');
+      if (!popup) {
+        alert('Por favor, permite las ventanas emergentes para poder pagar.');
+        return;
+      }
+      popup.document.write('<div style="font-family:sans-serif; text-align:center; padding:40px; color:#0F2A23;">Cargando pasarela de pago...</div>');
+
+      // 2. Cambiar vista del modal a "esperando"
       document.getElementById('recarga-content').style.display = 'none';
       document.getElementById('recarga-waiting').style.display = 'block';
 
+      // 3. Pedir la URL a Apps Script
       var callbackName = 'cb_pay_' + Date.now();
       var script = document.createElement('script');
       window[callbackName] = function(data) {
@@ -771,18 +780,21 @@
         try { document.body.removeChild(script); } catch(e) {}
 
         if (data.url) {
-          // Abrir Popup flotante
-          window.open(data.url, 'stripePopup', 'width=500,height=700,scrollbars=no');
+          // 4. Redirigir la ventanita ya abierta a la URL de Stripe
+          popup.location.href = data.url;
           // Empezar a verificar el saldo cada 3 segundos
           recargaInterval = setInterval(verificarRecargaSaldo, 3000);
         } else {
+          popup.close(); // Cerrar la ventanita si hubo error
           alert('Error de Stripe: ' + (data.error || 'Desconocido'));
           document.getElementById('recarga-content').style.display = 'block';
           document.getElementById('recarga-waiting').style.display = 'none';
         }
       };
-            var emailUser = localStorage.getItem('fc_email') || '';
+      
+      var emailUser = localStorage.getItem('fc_email') || '';
       script.src = APPS_SCRIPT_URL + '?action=pay&email=' + encodeURIComponent(emailUser) + '&resultId=' + encodeURIComponent(resultIdActual || 'recarga') + '&priceId=' + encodeURIComponent(selectedBundlePrice) + '&callback=' + callbackName;
+      document.body.appendChild(script);
     }
 
     function verificarRecargaSaldo() {
