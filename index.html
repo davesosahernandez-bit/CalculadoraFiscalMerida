@@ -245,8 +245,7 @@
       .ws-content { padding: 24px 20px 100px 20px; }
       
       .bottom-nav { display: flex !important; position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border); justify-content: space-around; padding: 12px 0; z-index: 100; box-shadow: 0 -4px 6px rgba(0,0,0,0.05); }
-      .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 11px; cursor: pointer; }
-      .bottom-nav-item.active { color: var(--blue); }
+      .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 11px; cursor: pointer; flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; }      .bottom-nav-item.active { color: var(--blue); }
     }
     .bottom-nav { display: none; }
   </style>
@@ -823,7 +822,15 @@
             // ¡Pago confirmado!
             clearInterval(recargaInterval);
             localStorage.setItem('fc_saldo', data.saldo);
-            document.querySelector('.saldo-sidebar .num').innerText = data.saldo;
+            
+            // Actualizar saldo en el menú lateral (PC)
+            var sidebarNum = document.querySelector('.saldo-sidebar .num');
+            if (sidebarNum) sidebarNum.innerText = data.saldo;
+            
+            // Actualizar saldo en la vista grande (Móvil)
+            var saldoGrande = document.getElementById('saldo-numero-grande');
+            if (saldoGrande) saldoGrande.innerText = data.saldo;
+            
             evaluarSaldoUI(); 
             
             cerrarModalRecarga();
@@ -835,7 +842,7 @@
           }
         }
       };
-      script.src = APPS_SCRIPT_URL + '?action=checkSaldo&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      script.src = APPS_SCRIPT_URL + '?action=checkSaldo&email=' + encodeURIComponent(email) + '&t=' + Date.now() + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
         function irAInicio() {
