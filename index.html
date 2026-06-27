@@ -1053,10 +1053,7 @@
     function renderizarResultadoWS(d) {
       var r = d.resultado;
       document.getElementById('meta-resultado').innerHTML = '<strong>Municipio:</strong> ' + (r.municipio || '') + ' &nbsp;|&nbsp; <strong>Fecha:</strong> ' + (r.fechaCalculo || '');
-      
-      document.getElementById('aviso-saldo').innerHTML = '';
-
-      
+        
             var btnPdf = document.getElementById('btn-pdf');
       if (r.urlPDF) {
         btnPdf.setAttribute('data-url', r.urlPDF);
