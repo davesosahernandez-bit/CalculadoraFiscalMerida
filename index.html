@@ -972,10 +972,6 @@
       }
     }
 
-      // Cargar historial si es el caso
-      if (vista === 'ws-historial') cargarHistorial();
-    }
-
     function cargarHistorial() {
       const email = localStorage.getItem('fc_email');
       if (!email) return;
