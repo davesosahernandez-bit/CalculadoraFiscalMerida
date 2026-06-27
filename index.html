@@ -501,11 +501,11 @@
         </div>
       </div>
 
-            <!-- Vista: Resultado -->
+      <!-- Vista: Resultado -->
       <div id="ws-resultado" style="display: none;">
         <div class="meta" id="meta-resultado" style="font-size: 13px; color: #666; margin-bottom: 16px;"></div>
         
-                <div style="display: flex; gap: 12px; margin: 20px 0 32px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 12px; margin: 20px 0 32px; flex-wrap: wrap;">
           <a id="btn-pdf" href="#" target="_blank" class="btn-primary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#0F2A23; color:white; padding:14px 20px; border-radius:10px; font-weight:600; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             Ver / Descargar PDF
@@ -521,7 +521,6 @@
       </div>
 
       <!-- Vista: Bloqueado -->
-           <!-- Vista: Bloqueado -->
       <div id="ws-bloqueado" style="display: none; text-align: center; padding-top: 40px;">
         <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
         <h3 style="font-size: 22px; color: var(--navy); margin-bottom: 12px;">Tu cálculo está listo.<br>Desbloquéalo recargando.</h3>
@@ -738,125 +737,53 @@
     </div>
   </div>
 
-  <script>
+    <script>
+    // ⚠️ IMPORTANTE: Cambia esta URL por la de tu Apps Script
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQaOPVkYTYvLOq4Qgp_0fawAGUQJ5cYY0F3TyOPzo0MAtMuu0MLlzzf3MTV5Rl8p0N/exec';
+
+    // ── GLOBALES ──
+    var PASOS = [
+      'Validando datos del formulario...',
+      'Consultando INPC en Banxico...',
+      'Calculando ISR Federal y Cedular...',
+      'Calculando ISAI y derechos INSEJUPY...',
+      'Generando tu reporte fiscal...'
+    ];
+    var pasoActual = 0;
+    var intervaloPasos;
+    var resultIdActual = '';
+    var intentos = 0;
     var selectedBundlePrice = null;
     var recargaInterval;
-    var urlPDFActual = '#';
-        function abrirPDF() {
-      var btnPdf = document.getElementById('btn-pdf');
-      var url = btnPdf.getAttribute('data-url') || '#';
-      
-      if (url && url !== '#') {
-        window.open(url, '_blank');
+
+    // ── NAVEGACIÓN PRINCIPAL ──
+    function showView(viewName) {
+      document.getElementById('view-landing').style.display = viewName === 'landing' ? 'block' : 'none';
+      document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
+      const btn = document.getElementById('nav-auth-btn');
+      btn.innerText = viewName === 'workstation' ? 'Cerrar Sesión' : 'Iniciar Sesión';
+      window.scrollTo(0, 0);
+    }
+
+    function handleNavAuth() {
+      const btn = document.getElementById('nav-auth-btn');
+      if (btn.innerText === 'Cerrar Sesión') {
+        localStorage.removeItem('fc_email');
+        localStorage.removeItem('fc_saldo');
+        showView('landing');
       } else {
-        alert('El PDF aún se está generando. Espera unos segundos y vuelve a intentarlo.');
-      }
-    }
-
-    function abrirModalRecarga() {
-      selectedBundlePrice = null;
-      document.getElementById('bundle-5').style.borderColor = '#E2E8F0';
-      document.getElementById('bundle-20').style.borderColor = '#E2E8F0';
-      document.getElementById('recarga-content').style.display = 'block';
-      document.getElementById('recarga-waiting').style.display = 'none';
-      document.getElementById('modal-recarga').style.display = 'flex';
-    }
-
-    function cerrarModalRecarga() {
-      document.getElementById('modal-recarga').style.display = 'none';
-      clearInterval(recargaInterval);
-    }
-
-    function seleccionarBundle(priceId, el) {
-      selectedBundlePrice = priceId;
-      document.getElementById('bundle-5').style.borderColor = '#E2E8F0';
-      document.getElementById('bundle-20').style.borderColor = '#E2E8F0';
-      el.style.borderColor = '#10B981';
-    }
-
-    function iniciarPagoPopup() {
-      if (!selectedBundlePrice) {
-        alert('Por favor, selecciona un paquete de créditos.');
-        return;
-      }
-
-      // 1. Abrir ventanita VACÍA inmediatamente en el clic (evita que el navegador la bloquee)
-      var popup = window.open('', 'stripePopup', 'width=500,height=700,scrollbars=no');
-      if (!popup) {
-        alert('Por favor, permite las ventanas emergentes para poder pagar.');
-        return;
-      }
-      popup.document.write('<div style="font-family:sans-serif; text-align:center; padding:40px; color:#0F2A23;">Cargando pasarela de pago...</div>');
-
-      // 2. Cambiar vista del modal a "esperando"
-      document.getElementById('recarga-content').style.display = 'none';
-      document.getElementById('recarga-waiting').style.display = 'block';
-
-      // 3. Pedir la URL a Apps Script
-      var callbackName = 'cb_pay_' + Date.now();
-      var script = document.createElement('script');
-      window[callbackName] = function(data) {
-        delete window[callbackName];
-        try { document.body.removeChild(script); } catch(e) {}
-
-        if (data.url) {
-          // 4. Redirigir la ventanita ya abierta a la URL de Stripe
-          popup.location.href = data.url;
-          // Empezar a verificar el saldo cada 3 segundos
-          recargaInterval = setInterval(verificarRecargaSaldo, 3000);
+        const email = localStorage.getItem('fc_email');
+        if (email) {
+          const saldo = localStorage.getItem('fc_saldo') || 0;
+          document.querySelector('.saldo-sidebar .num').innerText = saldo;
+          showView('workstation');
         } else {
-          popup.close(); // Cerrar la ventanita si hubo error
-          alert('Error de Stripe: ' + (data.error || 'Desconocido'));
-          document.getElementById('recarga-content').style.display = 'block';
-          document.getElementById('recarga-waiting').style.display = 'none';
+          document.getElementById('registro').scrollIntoView({behavior: 'smooth'});
         }
-      };
-      
-      var emailUser = localStorage.getItem('fc_email') || '';
-      script.src = APPS_SCRIPT_URL + '?action=pay&email=' + encodeURIComponent(emailUser) + '&resultId=' + encodeURIComponent(resultIdActual || 'recarga') + '&priceId=' + encodeURIComponent(selectedBundlePrice) + '&callback=' + callbackName;
-      document.body.appendChild(script);
+      }
     }
 
-    function verificarRecargaSaldo() {
-      var email = localStorage.getItem('fc_email');
-      if (!email) return;
-
-      var callbackName = 'cb_check_saldo_' + Date.now();
-      var script = document.createElement('script');
-      window[callbackName] = function(data) {
-        delete window[callbackName];
-        try { document.body.removeChild(script); } catch(e) {}
-        
-        if (data.success) {
-          let saldoGuardado = parseInt(localStorage.getItem('fc_saldo') || 0);
-          if (data.saldo > saldoGuardado) {
-            // ¡Pago confirmado!
-            clearInterval(recargaInterval);
-            localStorage.setItem('fc_saldo', data.saldo);
-            
-            // Actualizar saldo en el menú lateral (PC)
-            var sidebarNum = document.querySelector('.saldo-sidebar .num');
-            if (sidebarNum) sidebarNum.innerText = data.saldo;
-            
-            // Actualizar saldo en la vista grande (Móvil)
-            var saldoGrande = document.getElementById('saldo-numero-grande');
-            if (saldoGrande) saldoGrande.innerText = data.saldo;
-            
-            evaluarSaldoUI(); 
-            
-            cerrarModalRecarga();
-            
-            // Si estaba viendo un cálculo bloqueado, desbloquearlo
-            if (document.getElementById('ws-bloqueado').style.display === 'block' && resultIdActual) {
-              abrirHistorialItem(resultIdActual);
-            }
-          }
-        }
-      };
-      script.src = APPS_SCRIPT_URL + '?action=checkSaldo&email=' + encodeURIComponent(email) + '&t=' + Date.now() + '&callback=' + callbackName;
-      document.body.appendChild(script);
-    }
-        function irAInicio() {
+    function irAInicio() {
       if (localStorage.getItem('fc_email')) {
         showView('workstation');
         cambiarVistaWS('ws-inicio', document.querySelector('.sidebar-item'));
@@ -864,20 +791,51 @@
         showView('landing');
       }
     }
-        function evaluarSaldoUI() {
+
+    // ── VISTAS WORKSTATION ──
+    function mostrarVistaWS(vista) {
+      ['ws-inicio', 'ws-espera', 'ws-resultado', 'ws-bloqueado', 'ws-historial', 'ws-soporte', 'ws-saldo'].forEach(function(v) {
+        var el = document.getElementById(v);
+        if (el) el.style.display = v === vista ? 'block' : 'none';
+      });
+    }
+
+    function cambiarVistaWS(vista, el) {
+      mostrarVistaWS(vista);
+      document.querySelectorAll('.sidebar-item, .bottom-nav-item').forEach(function(i) { i.classList.remove('active'); });
+      if(el) el.classList.add('active');
+      
+      const titulos = {
+        'ws-inicio': 'Tu Estación de Trabajo',
+        'ws-historial': 'Historial de Operaciones',
+        'ws-saldo': 'Mi Saldo',
+        'ws-soporte': 'Soporte y Contacto'
+      };
+      document.getElementById('ws-title').innerText = titulos[vista] || 'Tu Estación de Trabajo';
+
+      if (vista === 'ws-inicio') evaluarSaldoUI();
+      if (vista === 'ws-historial') cargarHistorial();
+      if (vista === 'ws-saldo') {
+        document.getElementById('saldo-numero-grande').innerText = localStorage.getItem('fc_saldo') || 0;
+      }
+    }
+
+    function evaluarSaldoUI() {
       let saldo = parseInt(localStorage.getItem('fc_saldo') || 0);
       const btn = document.getElementById('btn-iniciar-op');
       const aviso = document.getElementById('sin-saldo-aviso');
-      if (saldo <= 0) {
-        btn.style.background = '#94a3b8';
-        btn.style.cursor = 'not-allowed';
-        btn.setAttribute('onclick', 'alert("No tienes créditos disponibles. Por favor, recarga saldo para seguir calculando.")');
-        if(aviso) aviso.style.display = 'block';
-      } else {
-        btn.style.background = '#10B981';
-        btn.style.cursor = 'pointer';
-        btn.setAttribute('onclick', 'abrirModalForm()');
-        if(aviso) aviso.style.display = 'none';
+      if (btn) {
+        if (saldo <= 0) {
+          btn.style.background = '#94a3b8';
+          btn.style.cursor = 'not-allowed';
+          btn.setAttribute('onclick', 'alert("No tienes créditos disponibles. Por favor, recarga saldo para seguir calculando.")');
+          if(aviso) aviso.style.display = 'block';
+        } else {
+          btn.style.background = '#10B981';
+          btn.style.cursor = 'pointer';
+          btn.setAttribute('onclick', 'abrirModalForm()');
+          if(aviso) aviso.style.display = 'none';
+        }
       }
     }
 
@@ -889,39 +847,120 @@
         abrirModalForm();
       }
     }
+
+    // ── AUTENTICACIÓN ──
+    function abrirModalAuth() {
+      if (localStorage.getItem('fc_email')) {
+        localStorage.removeItem('fc_email');
+        localStorage.removeItem('fc_saldo');
+        showView('landing');
+        return;
+      }
+      document.getElementById('auth-email').value = '';
+      document.getElementById('auth-pin').value = '';
+      document.getElementById('auth-email-step').style.display = 'block';
+      document.getElementById('auth-pin-step').style.display = 'none';
+      document.getElementById('auth-title').innerText = 'Iniciar Sesión';
+      document.getElementById('auth-sub').innerText = 'Ingresa tu correo para continuar.';
+      document.getElementById('modal-auth').style.display = 'flex';
+    }
+
+    function cerrarModalAuth() {
+      document.getElementById('modal-auth').style.display = 'none';
+    }
+
+    function checkEmail() {
+      var email = document.getElementById('auth-email').value.trim();
+      if (!email) { alert('Ingresa tu correo'); return; }
+      
+      var callbackName = 'cb_check_' + Date.now();
+      var script = document.createElement('script');
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        if (data.error) { alert(data.error); return; }
+        document.getElementById('auth-email-step').style.display = 'none';
+        document.getElementById('auth-pin-step').style.display = 'block';
+        document.getElementById('auth-title').innerText = data.exists ? 'Ingresa tu PIN' : 'Verifica tu correo';
+        document.getElementById('auth-pin-text').innerText = data.exists ? 'Ingresa tu PIN de 4 dígitos.' : 'Te enviamos un PIN a tu correo. Ingrésalo aquí.';
+      };
+      script.src = APPS_SCRIPT_URL + '?action=checkEmail&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    function verifyPin() {
+      var email = document.getElementById('auth-email').value.trim();
+      var pin = document.getElementById('auth-pin').value.trim();
+      if (!pin) { alert('Ingresa tu PIN'); return; }
+
+      var callbackName = 'cb_verify_' + Date.now();
+      var script = document.createElement('script');
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        if (data.success) {
+          localStorage.setItem('fc_email', data.email);
+          localStorage.setItem('fc_saldo', data.saldo);
+          document.querySelector('.saldo-sidebar .num').innerText = data.saldo;
+          cerrarModalAuth();
+          showView('workstation');
+          cambiarVistaWS('ws-inicio', document.querySelector('.sidebar-item'));
+          evaluarSaldoUI();
+        } else {
+          alert(data.error || 'PIN incorrecto');
+        }
+      };
+      script.src = APPS_SCRIPT_URL + '?action=verifyPin&email=' + encodeURIComponent(email) + '&pin=' + encodeURIComponent(pin) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    function resendPin() {
+      var email = document.getElementById('auth-email').value.trim();
+      if (!email) return;
+      var callbackName = 'cb_resend_' + Date.now();
+      var script = document.createElement('script');
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        alert(data.success ? 'Nuevo PIN enviado a tu correo.' : (data.error || 'Error'));
+      };
+      script.src = APPS_SCRIPT_URL + '?action=resendPin&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    function backToEmail() {
+      document.getElementById('auth-email-step').style.display = 'block';
+      document.getElementById('auth-pin-step').style.display = 'none';
+      document.getElementById('auth-title').innerText = 'Iniciar Sesión';
+    }
+
+    // ── FORMULARIO ──
     function abrirModalForm() {
-      limpiarFormulario(); // Limpiar antes de mostrar
+      limpiarFormulario();
       document.getElementById('modal-form').style.display = 'flex';
     }
 
+    function cerrarModal() {
+      document.getElementById('modal-form').style.display = 'none';
+    }
+
     function limpiarFormulario() {
-      // Limpiar inputs de texto y número
       ['f-precio', 'f-catastral', 'f-costo', 'f-avaluo', 'f-deducciones', 'f-m2Ter', 'f-m2Const'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.value = '';
       });
-
-      // Limpiar fechas
       ['f-fecAdq', 'f-fecVen', 'f-fecErog'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.value = '';
       });
-
-      // Resetear selects y checkboxes
       document.getElementById('f-municipio').value = 'MERIDA';
       document.getElementById('f-casa').checked = false;
       document.getElementById('f-copropiedad').checked = false;
       document.getElementById('f-tieneDeducciones').checked = false;
       document.getElementById('f-desglose').checked = false;
-      
-      // Ocultar cajas condicionales
       toggleCopropiedad();
       toggleDeducciones();
       toggleDesglose();
-    }
-
-    function cerrarModal() {
-      document.getElementById('modal-form').style.display = 'none';
     }
 
     function toggleCopropiedad() {
@@ -939,178 +978,11 @@
       document.getElementById('desglose-box').style.display = checked ? 'block' : 'none';
     }
 
-    // Función para formatear números con comas
     function formatNumber(input) {
-      let value = input.value.replace(/[^0-9.]/g, ''); // Solo números y punto
+      let value = input.value.replace(/[^0-9.]/g, '');
       let parts = value.split('.');
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       input.value = parts.join('.');
-    }
-
-    var PASOS = [
-      'Validando datos del formulario...',
-      'Consultando INPC en Banxico...',
-      'Calculando ISR Federal y Cedular...',
-      'Calculando ISAI y derechos INSEJUPY...',
-      'Generando tu reporte fiscal...'
-    ];
-    var pasoActual = 0;
-    var intervaloPasos;
-    var resultIdActual = '';
-    var intentos = 0;
-
-    function mostrarVistaWS(vista) {
-      ['ws-inicio', 'ws-espera', 'ws-resultado', 'ws-bloqueado', 'ws-historial', 'ws-soporte', 'ws-saldo'].forEach(function(v) {
-        var el = document.getElementById(v);
-        if (el) el.style.display = v === vista ? 'block' : 'none';
-      });
-    }
-
-    function cambiarVistaWS(vista, el) {
-      mostrarVistaWS(vista);
-      
-      // Actualizar active en sidebar y bottom-nav
-      document.querySelectorAll('.sidebar-item, .bottom-nav-item').forEach(function(i) { i.classList.remove('active'); });
-      if(el) el.classList.add('active');
-      
-      // Títulos dinámicos
-      const titulos = {
-        'ws-inicio': 'Tu Estación de Trabajo',
-        'ws-historial': 'Historial de Operaciones',
-        'ws-saldo': 'Mi Saldo',
-        'ws-soporte': 'Soporte y Contacto'
-      };
-      document.getElementById('ws-title').innerText = titulos[vista] || 'Tu Estación de Trabajo';
-
-      // Acciones al cambiar de vista
-      if (vista === 'ws-inicio') evaluarSaldoUI();
-      if (vista === 'ws-historial') cargarHistorial();
-      if (vista === 'ws-saldo') {
-        document.getElementById('saldo-numero-grande').innerText = localStorage.getItem('fc_saldo') || 0;
-      }
-    }
-
-    function cargarHistorial() {
-      const email = localStorage.getItem('fc_email');
-      if (!email) return;
-      
-      document.getElementById('historial-list').innerHTML = '<p style="color:var(--text-muted); text-align:center;">Cargando historial...</p>';
-
-      var callbackName = 'cb_hist_' + Date.now();
-      var script = document.createElement('script');
-      window[callbackName] = function(data) {
-        delete window[callbackName];
-        try { document.body.removeChild(script); } catch(e) {}
-        
-        if (data.error) {
-          document.getElementById('historial-list').innerHTML = '<p style="color:red;">'+data.error+'</p>';
-          return;
-        }
-        
-        if (!data.calculos || data.calculos.length === 0) {
-          document.getElementById('historial-list').innerHTML = '<p style="color:var(--text-muted); text-align:center;">No tienes cálculos anteriores.</p>';
-          return;
-        }
-
-        var html = data.calculos.map(function(c) {
-          var lockIcon = c.visible ? '📄' : '🔒';
-          var totalClass = c.visible ? 'color:var(--navy);' : 'color:var(--text-muted);';
-          return '<div onclick="abrirHistorialItem(\''+c.id+'\')" style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:white; border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s;">' +
-                 '<div style="display:flex; align-items:center; gap:16px;">' +
-                   '<div style="font-size:24px;">'+lockIcon+'</div>' +
-                   '<div>' +
-                     '<div style="font-weight:600; color:var(--navy);">'+c.municipio+' · '+c.fecha+'</div>' +
-                     '<div style="font-size:13px; color:var(--text-muted);">'+(c.visible ? 'Cálculo completado' : 'Bloqueado - Saldo insuficiente')+'</div>' +
-                   '</div>' +
-                 '</div>' +
-                 '<div style="text-align:right;">' +
-                   '<div style="font-size:11px; color:var(--text-muted);">Precio</div>' +
-                   '<div style="font-weight:600; '+totalClass+'">'+fmtWS(c.precioVenta)+'</div>' +
-                 '</div>' +
-                 '</div>';
-        }).join('');
-        document.getElementById('historial-list').innerHTML = html;
-      };
-      script.src = APPS_SCRIPT_URL + '?action=getHistory&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
-      document.body.appendChild(script);
-    }
-
-    function abrirHistorialItem(id) {
-      resultIdActual = id;
-      intentos = 0;
-      mostrarVistaWS('ws-espera');
-      
-      // Ocultar el título y pie de página de la espera normal
-      document.getElementById('ws-espera-title').style.display = 'none';
-      document.getElementById('ws-espera-foot').style.display = 'none';
-      
-      // Mostrar solo el mensaje de cargando
-      document.getElementById('stepper-container').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:40px 0;">Cargando resultado...</div>';
-      clearInterval(intervaloPasos); // Detener cualquier stepper previo
-      setTimeout(consultarEstadoWS, 500);
-    }
-
-    function renderizarResultadoWS(d) {
-      var r = d.resultado;
-      document.getElementById('meta-resultado').innerHTML = '<strong>Municipio:</strong> ' + (r.municipio || '') + ' &nbsp;|&nbsp; <strong>Fecha:</strong> ' + (r.fechaCalculo || '');
-        
-            var btnPdf = document.getElementById('btn-pdf');
-      if (r.urlPDF) {
-        btnPdf.setAttribute('data-url', r.urlPDF);
-        btnPdf.innerText = 'Ver / Descargar PDF';
-      } else {
-        btnPdf.setAttribute('data-url', '#');
-        btnPdf.innerText = 'Generando PDF...';
-        // Si no hay PDF, intentar buscarlo cada 5 segundos
-        var intentosPDF = 0;
-        var intervaloPDF = setInterval(function() {
-          intentosPDF++;
-          if (intentosPDF > 12) { // 1 minuto máximo
-            clearInterval(intervaloPDF);
-            btnPdf.innerText = 'PDF no disponible';
-            return;
-          }
-          var cbName = 'cb_pdf_' + Date.now();
-          var s = document.createElement('script');
-          window[cbName] = function(dataPdf) {
-            delete window[cbName];
-            try { document.body.removeChild(s); } catch(e) {}
-            if (dataPdf.resultado && dataPdf.resultado.urlPDF) {
-              clearInterval(intervaloPDF);
-              btnPdf.setAttribute('data-url', dataPdf.resultado.urlPDF);
-              btnPdf.innerText = 'Ver / Descargar PDF';
-            }
-          };
-          s.src = APPS_SCRIPT_URL + '?action=status&resultId=' + encodeURIComponent(resultIdActual) + '&callback=' + cbName;
-          document.body.appendChild(s);
-        }, 5000);
-      }
-      var msgWA = '📊 *Estimación Fiscal FiscalCheck*\n' +
-                  'Municipio: ' + (r.municipio || '') + '\n' +
-                  '*Total Vendedor:* $' + (r.totalVendedor || 0).toFixed(2) + '\n' +
-                  '*Total Comprador:* $' + (r.totalComprador || 0).toFixed(2) + '\n\n' +
-                  '🔗 Ver detalle completo:\n' + window.location.href;
-      document.getElementById('btn-wa').href = 'https://wa.me/?text=' + encodeURIComponent(msgWA);
-
-      var html = '';
-      html += '<h2 style="font-size:15px; font-weight:700; margin:24px 0 8px; color:#0F2A23; text-transform:uppercase;">Vendedor</h2>';
-      html += filaWS('Costo actualizado', fmtWS(r.costoActualizado));
-      html += filaWS('Ganancia total', fmtWS(r.gananciaTotal));
-      if (r.esCasaHabitacion) html += filaWS('Límite exención Art. 93', fmtWS(r.limiteExencionPesos));
-      html += filaWS('Ganancia gravable', fmtWS(r.gananciaGravable));
-      html += filaWS('ISR Federal (Art. 126)', fmtWS(r.ISRFederal));
-      html += filaWS('Cedular Yucatán (5%)', fmtWS(r.impuestoCedular));
-      html += '<div style="display:flex; justify-content:space-between; padding:12px 0; font-size:18px; font-weight:700; color:#10B981; border-top:2px solid #E2E8F0; margin-top:4px;"><span>Total Vendedor</span><span>' + fmtWS(r.totalVendedor) + '</span></div>';
-
-      html += '<h2 style="font-size:15px; font-weight:700; margin:24px 0 8px; color:#0F2A23; text-transform:uppercase;">Comprador</h2>';
-      html += filaWS('Base ISAI', fmtWS(r.baseISAI));
-      html += filaWS('ISAI ' + (r.municipio || ''), fmtWS(r.ISAI));
-      html += filaWS('INSEJUPY (12.70 UMAs)', fmtWS(r.derechosINSEJUPY));
-      html += '<div style="display:flex; justify-content:space-between; padding:12px 0; font-size:18px; font-weight:700; color:#0F2A23; border-top:2px solid #E2E8F0; margin-top:4px;"><span>Total Comprador</span><span>' + fmtWS(r.totalComprador) + '</span></div>';
-
-      document.getElementById('cuerpo-resultado').innerHTML = html;
-      document.getElementById('disclaimer-texto').textContent = r.disclaimer || '';
-      mostrarVistaWS('ws-resultado');
     }
 
     function enviarCalculo() {
@@ -1122,7 +994,6 @@
       const fecErog = document.getElementById('f-fecErog').value;
       const fecAdq = document.getElementById('f-fecAdq').value;
       const fecVen = document.getElementById('f-fecVen').value;
-
       const cleanNum = (id) => document.getElementById(id).value.replace(/,/g, '');
 
       let pctTerreno = 20, pctConstr = 80;
@@ -1161,16 +1032,15 @@
         return;
       }
 
-      // 1. Cerrar el modal y mostrar el Stepper INMEDIATAMENTE
       cerrarModal();
-       // Restaurar título y pie de página para cálculo nuevo
       document.getElementById('ws-espera-title').style.display = 'block';
       document.getElementById('ws-espera-foot').style.display = 'block';
-      // Iniciar el stepper visual sin requestID todavía
-      resultIdActual = ''; // Limpiar por si acaso
+      
+      resultIdActual = ''; 
       intentos = 0;
       pasoActual = 0;
       mostrarVistaWS('ws-espera');
+      
       var stepperHtml = PASOS.map(function(p, i) {
         return '<div id="step-'+i+'" style="display:flex; align-items:center; gap:12px; margin-bottom:16px; opacity:0.4; transition:opacity 0.3s;">' +
                '<div style="width:24px; height:24px; border-radius:50%; border:2px solid #E2E8F0; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748B;">' + (i+1) + '</div>' +
@@ -1183,23 +1053,17 @@
         if (pasoActual < PASOS.length - 1) { pasoActual++; activarPaso(pasoActual); }
       }, 8000);
 
-      // 2. Enviar la petición a Apps Script en segundo plano
       var callbackName = 'cb_calc_' + Date.now();
       var script = document.createElement('script');
-      
       window[callbackName] = function(data) {
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
-
         if (data.success) {
-          // Si tenía saldo, descontarlo de la UI local
           let saldoActual = parseInt(localStorage.getItem('fc_saldo') || 0);
           if (saldoActual > 0) {
             localStorage.setItem('fc_saldo', saldoActual - 1);
             document.querySelector('.saldo-sidebar .num').innerText = saldoActual - 1;
           }
-          
-          // Guardar el ID y empezar a preguntar si ya está listo
           resultIdActual = data.requestID;
           setTimeout(consultarEstadoWS, 1000);
         } else {
@@ -1208,25 +1072,20 @@
           alert(data.error || 'Error al calcular. Verifica tus datos.');
         }
       };
-
-      var url = APPS_SCRIPT_URL + '?action=calculate' + 
-                '&payload=' + encodeURIComponent(JSON.stringify(payload)) + 
-                '&callback=' + callbackName;
-      
+      var url = APPS_SCRIPT_URL + '?action=calculate' + '&payload=' + encodeURIComponent(JSON.stringify(payload)) + '&callback=' + callbackName;
       script.src = url;
       document.body.appendChild(script);
     }
 
+    // ── PROCESAMIENTO Y POLLING ──
     function iniciarProcesamientoWS(reqId) {
       resultIdActual = reqId;
       intentos = 0;
       pasoActual = 0;
       mostrarVistaWS('ws-espera');
-      // Restaurar título y pie de página
       document.getElementById('ws-espera-title').style.display = 'block';
       document.getElementById('ws-espera-foot').style.display = 'block';
       
-      // Inicializar stepper visual
       var stepperHtml = PASOS.map(function(p, i) {
         return '<div id="step-'+i+'" style="display:flex; align-items:center; gap:12px; margin-bottom:16px; opacity:0.4; transition:opacity 0.3s;">' +
                '<div style="width:24px; height:24px; border-radius:50%; border:2px solid #E2E8F0; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748B;">' + (i+1) + '</div>' +
@@ -1235,14 +1094,9 @@
       }).join('');
       document.getElementById('stepper-container').innerHTML = stepperHtml;
       activarPaso(0);
-      
       intervaloPasos = setInterval(function() {
-        if (pasoActual < PASOS.length - 1) {
-          pasoActual++;
-          activarPaso(pasoActual);
-        }
+        if (pasoActual < PASOS.length - 1) { pasoActual++; activarPaso(pasoActual); }
       }, 8000);
-
       setTimeout(consultarEstadoWS, 3000);
     }
 
@@ -1280,35 +1134,34 @@
 
       var callbackName = 'cb_status_' + Date.now();
       var script = document.createElement('script');
-
       window[callbackName] = function(data) {
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
-
         if (data.estado === 'LISTO') {
           clearInterval(intervaloPasos);
           renderizarResultadoWS(data);
         } else if (data.estado === 'BLOQUEADO_SALDO') {
           clearInterval(intervaloPasos);
           mostrarVistaWS('ws-bloqueado');
-          setTimeout(consultarEstadoWS, 5000); // Seguir preguntando por si paga
+          setTimeout(consultarEstadoWS, 5000);
         } else {
           setTimeout(consultarEstadoWS, 5000);
         }
       };
-
+      script.onerror = function() {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        setTimeout(consultarEstadoWS, 6000);
+      };
       script.src = APPS_SCRIPT_URL + '?action=status&resultId=' + encodeURIComponent(resultIdActual) + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
 
+    // ── RENDERIZAR RESULTADO ──
     function renderizarResultadoWS(d) {
       var r = d.resultado;
       document.getElementById('meta-resultado').innerHTML = '<strong>Municipio:</strong> ' + (r.municipio || '') + ' &nbsp;|&nbsp; <strong>Fecha:</strong> ' + (r.fechaCalculo || '');
-      
-      // Aviso de saldo eliminado (se ve en el sidebar)
-      document.getElementById('aviso-saldo').innerHTML = '';
 
-      // Lógica del botón PDF
       var btnPdf = document.getElementById('btn-pdf');
       if (r.urlPDF) {
         btnPdf.href = r.urlPDF;
@@ -1316,11 +1169,10 @@
       } else {
         btnPdf.href = '#';
         btnPdf.innerText = 'Generando PDF...';
-        // Si no hay PDF, intentar buscarlo cada 5 segundos
         var intentosPDF = 0;
         var intervaloPDF = setInterval(function() {
           intentosPDF++;
-          if (intentosPDF > 12) { // 1 minuto máximo
+          if (intentosPDF > 12) {
             clearInterval(intervaloPDF);
             btnPdf.innerText = 'PDF no disponible';
             return;
@@ -1378,122 +1230,150 @@
       return '$' + parseFloat(val).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
-    // ⚠️ IMPORTANTE: Cambia esta URL por la de tu Apps Script
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQaOPVkYTYvLOq4Qgp_0fawAGUQJ5cYY0F3TyOPzo0MAtMuu0MLlzzf3MTV5Rl8p0N/exec';
+    // ── HISTORIAL ──
+    function cargarHistorial() {
+      const email = localStorage.getItem('fc_email');
+      if (!email) return;
+      document.getElementById('historial-list').innerHTML = '<p style="color:var(--text-muted); text-align:center;">Cargando historial...</p>';
 
-        function showView(viewName) {
-      document.getElementById('view-landing').style.display = viewName === 'landing' ? 'block' : 'none';
-      document.getElementById('view-workstation').style.display = viewName === 'workstation' ? 'grid' : 'none';
-      
-      // Mostrar la sección "Acerca de" y Footer SOLO en la landing
-      const extras = document.getElementById('landing-extras');
-      if (extras) extras.style.display = viewName === 'landing' ? 'block' : 'none';
-
-      const btn = document.getElementById('nav-auth-btn');
-      btn.innerText = viewName === 'workstation' ? 'Cerrar Sesión' : 'Iniciar Sesión';
-      window.scrollTo(0, 0);
+      var callbackName = 'cb_hist_' + Date.now();
+      var script = document.createElement('script');
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        if (data.error) {
+          document.getElementById('historial-list').innerHTML = '<p style="color:red;">'+data.error+'</p>';
+          return;
+        }
+        if (!data.calculos || data.calculos.length === 0) {
+          document.getElementById('historial-list').innerHTML = '<p style="color:var(--text-muted); text-align:center;">No tienes cálculos anteriores.</p>';
+          return;
+        }
+        var html = data.calculos.map(function(c) {
+          var lockIcon = c.visible ? '📄' : '🔒';
+          var totalClass = c.visible ? 'color:var(--navy);' : 'color:var(--text-muted);';
+          return '<div onclick="abrirHistorialItem(\''+c.id+'\')" style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:white; border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s;">' +
+                 '<div style="display:flex; align-items:center; gap:16px;">' +
+                   '<div style="font-size:24px;">'+lockIcon+'</div>' +
+                   '<div>' +
+                     '<div style="font-weight:600; color:var(--navy);">'+c.municipio+' · '+c.fecha+'</div>' +
+                     '<div style="font-size:13px; color:var(--text-muted);">'+(c.visible ? 'Cálculo completado' : 'Bloqueado - Saldo insuficiente')+'</div>' +
+                   '</div>' +
+                 '</div>' +
+                 '<div style="text-align:right;">' +
+                   '<div style="font-size:11px; color:var(--text-muted);">Precio</div>' +
+                   '<div style="font-weight:600; '+totalClass+'">'+fmtWS(c.precioVenta)+'</div>' +
+                 '</div>' +
+                 '</div>';
+        }).join('');
+        document.getElementById('historial-list').innerHTML = html;
+      };
+      script.src = APPS_SCRIPT_URL + '?action=getHistory&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      document.body.appendChild(script);
     }
 
-    function abrirModalAuth() {
-      // Si ya tiene sesión, este botón sirve para Cerrar Sesión
-      if (localStorage.getItem('fc_email')) {
-        localStorage.removeItem('fc_email');
-        localStorage.removeItem('fc_saldo');
-        showView('landing');
+    function abrirHistorialItem(id) {
+      resultIdActual = id;
+      intentos = 0;
+      mostrarVistaWS('ws-espera');
+      document.getElementById('ws-espera-title').style.display = 'none';
+      document.getElementById('ws-espera-foot').style.display = 'none';
+      document.getElementById('stepper-container').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:40px 0;">Cargando resultado...</div>';
+      clearInterval(intervaloPasos);
+      setTimeout(consultarEstadoWS, 500);
+    }
+
+    // ── RECARGA Y STRIPE ──
+    function abrirModalRecarga() {
+      selectedBundlePrice = null;
+      document.getElementById('bundle-5').style.borderColor = '#E2E8F0';
+      document.getElementById('bundle-20').style.borderColor = '#E2E8F0';
+      document.getElementById('recarga-content').style.display = 'block';
+      document.getElementById('recarga-waiting').style.display = 'none';
+      document.getElementById('modal-recarga').style.display = 'flex';
+    }
+
+    function cerrarModalRecarga() {
+      document.getElementById('modal-recarga').style.display = 'none';
+      clearInterval(recargaInterval);
+    }
+
+    function seleccionarBundle(priceId, el) {
+      selectedBundlePrice = priceId;
+      document.getElementById('bundle-5').style.borderColor = '#E2E8F0';
+      document.getElementById('bundle-20').style.borderColor = '#E2E8F0';
+      el.style.borderColor = '#10B981';
+    }
+
+    function iniciarPagoPopup() {
+      if (!selectedBundlePrice) {
+        alert('Por favor, selecciona un paquete de créditos.');
         return;
       }
-      // Limpiar campos y abrir modal
-      document.getElementById('auth-email').value = '';
-      document.getElementById('auth-pin').value = '';
-      document.getElementById('auth-email-step').style.display = 'block';
-      document.getElementById('auth-pin-step').style.display = 'none';
-      document.getElementById('auth-title').innerText = 'Iniciar Sesión';
-      document.getElementById('auth-sub').innerText = 'Ingresa tu correo para continuar.';
-      document.getElementById('modal-auth').style.display = 'flex';
-    }
+      var popup = window.open('', 'stripePopup', 'width=500,height=700,scrollbars=no');
+      if (!popup) {
+        alert('Por favor, permite las ventanas emergentes para poder pagar.');
+        return;
+      }
+      popup.document.write('<div style="font-family:sans-serif; text-align:center; padding:40px; color:#0F2A23;">Cargando pasarela de pago...</div>');
 
-    function cerrarModalAuth() {
-      document.getElementById('modal-auth').style.display = 'none';
-    }
+      document.getElementById('recarga-content').style.display = 'none';
+      document.getElementById('recarga-waiting').style.display = 'block';
 
-    function checkEmail() {
-      var email = document.getElementById('auth-email').value.trim();
-      if (!email) { alert('Ingresa tu correo'); return; }
-      
-      var callbackName = 'cb_check_' + Date.now();
+      var callbackName = 'cb_pay_' + Date.now();
       var script = document.createElement('script');
-      
       window[callbackName] = function(data) {
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
-        
-        if (data.error) { alert(data.error); return; }
-        
-        // Si llega aquí, pedimos el PIN
-        document.getElementById('auth-email-step').style.display = 'none';
-        document.getElementById('auth-pin-step').style.display = 'block';
-        document.getElementById('auth-title').innerText = data.exists ? 'Ingresa tu PIN' : 'Verifica tu correo';
-        document.getElementById('auth-pin-text').innerText = data.exists ? 'Ingresa tu PIN de 4 dígitos.' : 'Te enviamos un PIN a tu correo. Ingrésalo aquí.';
-      };
-
-      script.src = APPS_SCRIPT_URL + '?action=checkEmail&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
-      document.body.appendChild(script);
-    }
-
-    function verifyPin() {
-      var email = document.getElementById('auth-email').value.trim();
-      var pin = document.getElementById('auth-pin').value.trim();
-      if (!pin) { alert('Ingresa tu PIN'); return; }
-
-      var callbackName = 'cb_verify_' + Date.now();
-      var script = document.createElement('script');
-      
-      window[callbackName] = function(data) {
-        delete window[callbackName];
-        try { document.body.removeChild(script); } catch(e) {}
-        
-        if (data.success) {
-          localStorage.setItem('fc_email', data.email);
-          localStorage.setItem('fc_saldo', data.saldo);
-          document.querySelector('.saldo-sidebar .num').innerText = data.saldo;
-          cerrarModalAuth();
-          showView('workstation');
+        if (data.url) {
+          popup.location.href = data.url;
+          recargaInterval = setInterval(verificarRecargaSaldo, 3000);
         } else {
-          alert(data.error || 'PIN incorrecto');
+          popup.close();
+          alert('Error de Stripe: ' + (data.error || 'Desconocido'));
+          document.getElementById('recarga-content').style.display = 'block';
+          document.getElementById('recarga-waiting').style.display = 'none';
         }
       };
-
-      script.src = APPS_SCRIPT_URL + '?action=verifyPin&email=' + encodeURIComponent(email) + '&pin=' + encodeURIComponent(pin) + '&callback=' + callbackName;
+      var emailUser = localStorage.getItem('fc_email') || '';
+      script.src = APPS_SCRIPT_URL + '?action=pay&email=' + encodeURIComponent(emailUser) + '&resultId=' + encodeURIComponent(resultIdActual || 'recarga') + '&priceId=' + encodeURIComponent(selectedBundlePrice) + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
 
-    function resendPin() {
-      var email = document.getElementById('auth-email').value.trim();
+    function verificarRecargaSaldo() {
+      var email = localStorage.getItem('fc_email');
       if (!email) return;
-      
-      var callbackName = 'cb_resend_' + Date.now();
+      var callbackName = 'cb_check_saldo_' + Date.now();
       var script = document.createElement('script');
       window[callbackName] = function(data) {
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
-        alert(data.success ? 'Nuevo PIN enviado a tu correo.' : (data.error || 'Error'));
+        if (data.success) {
+          let saldoGuardado = parseInt(localStorage.getItem('fc_saldo') || 0);
+          if (data.saldo > saldoGuardado) {
+            clearInterval(recargaInterval);
+            localStorage.setItem('fc_saldo', data.saldo);
+            var sidebarNum = document.querySelector('.saldo-sidebar .num');
+            if (sidebarNum) sidebarNum.innerText = data.saldo;
+            var saldoGrande = document.getElementById('saldo-numero-grande');
+            if (saldoGrande) saldoGrande.innerText = data.saldo;
+            evaluarSaldoUI(); 
+            cerrarModalRecarga();
+            if (document.getElementById('ws-bloqueado').style.display === 'block' && resultIdActual) {
+              abrirHistorialItem(resultIdActual);
+            }
+          }
+        }
       };
-      script.src = APPS_SCRIPT_URL + '?action=resendPin&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+      script.src = APPS_SCRIPT_URL + '?action=checkSaldo&email=' + encodeURIComponent(email) + '&t=' + Date.now() + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
 
-    function backToEmail() {
-      document.getElementById('auth-email-step').style.display = 'block';
-      document.getElementById('auth-pin-step').style.display = 'none';
-      document.getElementById('auth-title').innerText = 'Iniciar Sesión';
-    }
-
-    // ── AL CARGAR LA PÁGINA, REVISAR SI YA HAY SESIÓN ──
+    // ── INICIALIZACIÓN ──
     window.onload = function() {
       const params = new URLSearchParams(window.location.search);
       const urlStatus = params.get('status');
       
-      // 1. Si es la ventanita de pago exitoso, cerrarla
       if (urlStatus === 'success') {
         document.body.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#0F2A23; color:white; text-align:center; font-family:Inter, sans-serif;"><div style="font-size:48px; margin-bottom:16px;">✅</div><h2>¡Pago exitoso!</h2><p>Puedes cerrar esta ventana. Tu saldo se actualizó automáticamente.</p></div>';
         setTimeout(function() { window.close(); }, 2000);
@@ -1505,8 +1385,6 @@
         return;
       }
 
-      // 2. Lógica normal al cargar la página
-      const urlResultId = params.get('resultId');
       const savedEmail = localStorage.getItem('fc_email');
       const btn = document.getElementById('nav-auth-btn');
       
