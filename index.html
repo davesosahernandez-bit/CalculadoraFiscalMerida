@@ -505,8 +505,8 @@
       <div id="ws-resultado" style="display: none;">
         <div class="meta" id="meta-resultado" style="font-size: 13px; color: #666; margin-bottom: 16px;"></div>
         
-      <div style="display: flex; gap: 12px; margin: 20px 0 32px; flex-wrap: wrap;">
-          <button id="btn-pdf" class="btn-primary" style="flex:1; min-width: 200px; text-decoration:none; text-align:center; background:#0F2A23; color:white; padding:14px 20px; border-radius:10px; font-weight:600; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border:none; cursor:pointer;">
+              <div style="display: flex; gap: 12px; margin: 20px 0 32px; flex-wrap: wrap;">
+          <button id="btn-pdf" onclick="abrirPDF()" class="btn-primary" style="flex:1; min-width: 200px; text-align:center; background:#0F2A23; color:white; padding:14px 20px; border-radius:10px; font-weight:600; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border:none; cursor:pointer;">
             <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             Ver / Descargar PDF
           </button>
@@ -743,10 +743,14 @@
     var recargaInterval;
     var urlPDFActual = '#';
     function abrirPDF() {
-      if (urlPDFActual && urlPDFActual !== '#') {
-        window.open(urlPDFActual, '_blank');
+      var btnPdf = document.getElementById('btn-pdf');
+      // Leer la URL guardada en el atributo data-url del botón
+      var url = btnPdf.getAttribute('data-url') || '#';
+      
+      if (url && url !== '#') {
+        window.open(url, '_blank');
       } else {
-        alert('El PDF aún se está generando. Espera unos segundos y vuelve a intentarlo.');
+        alert('El PDF aún se está generando o no está disponible. Espera unos segundos y vuelve a intentarlo.');
       }
     }
 
@@ -1053,13 +1057,13 @@
       
       document.getElementById('aviso-saldo').innerHTML = '';
 
-      urlPDFActual = r.urlPDF || '#';
-      var btnPdf = document.getElementById('btn-pdf');
-      btnPdf.onclick = abrirPDF; // Asignar la función al clic
       
-      if (urlPDFActual !== '#') {
+      var btnPdf = document.getElementById('btn-pdf');
+      if (r.urlPDF) {
+        btnPdf.setAttribute('data-url', r.urlPDF);
         btnPdf.innerText = 'Ver / Descargar PDF';
       } else {
+        btnPdf.setAttribute('data-url', '#');
         btnPdf.innerText = 'Generando PDF...';
         // Si no hay PDF, intentar buscarlo cada 5 segundos
         var intentosPDF = 0;
@@ -1077,7 +1081,7 @@
             try { document.body.removeChild(s); } catch(e) {}
             if (dataPdf.resultado && dataPdf.resultado.urlPDF) {
               clearInterval(intervaloPDF);
-              urlPDFActual = dataPdf.resultado.urlPDF;
+              btnPdf.setAttribute('data-url', dataPdf.resultado.urlPDF);
               btnPdf.innerText = 'Ver / Descargar PDF';
             }
           };
