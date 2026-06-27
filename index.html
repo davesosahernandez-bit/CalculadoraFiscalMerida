@@ -1045,7 +1045,37 @@
       
       document.getElementById('aviso-saldo').innerHTML = '';
 
-      document.getElementById('btn-pdf').href = r.urlPDF || '#';
+            var btnPdf = document.getElementById('btn-pdf');
+      if (r.urlPDF) {
+        btnPdf.href = r.urlPDF;
+        btnPdf.innerText = 'Ver / Descargar PDF';
+      } else {
+        btnPdf.href = '#';
+        btnPdf.innerText = 'Generando PDF...';
+        // Si no hay PDF, intentar buscarlo cada 5 segundos
+        var intentosPDF = 0;
+        var intervaloPDF = setInterval(function() {
+          intentosPDF++;
+          if (intentosPDF > 12) { // 1 minuto máximo
+            clearInterval(intervaloPDF);
+            btnPdf.innerText = 'PDF no disponible';
+            return;
+          }
+          var cbName = 'cb_pdf_' + Date.now();
+          var s = document.createElement('script');
+          window[cbName] = function(dataPdf) {
+            delete window[cbName];
+            try { document.body.removeChild(s); } catch(e) {}
+            if (dataPdf.resultado && dataPdf.resultado.urlPDF) {
+              clearInterval(intervaloPDF);
+              btnPdf.href = dataPdf.resultado.urlPDF;
+              btnPdf.innerText = 'Ver / Descargar PDF';
+            }
+          };
+          s.src = APPS_SCRIPT_URL + '?action=status&resultId=' + encodeURIComponent(resultIdActual) + '&callback=' + cbName;
+          document.body.appendChild(s);
+        }, 5000);
+      }
       var msgWA = '📊 *Estimación Fiscal FiscalCheck*\n' +
                   'Municipio: ' + (r.municipio || '') + '\n' +
                   '*Total Vendedor:* $' + (r.totalVendedor || 0).toFixed(2) + '\n' +
