@@ -1369,7 +1369,34 @@
       document.body.appendChild(script);
     }
 
-    // ── INICIALIZACIÓN ──
+    // ── SINCRONIZACIÓN DE SALDO ──
+    function sincronizarSaldo() {
+      var email = localStorage.getItem('fc_email');
+      if (!email) return;
+
+      var callbackName = 'cb_sync_saldo_' + Date.now();
+      var script = document.createElement('script');
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        try { document.body.removeChild(script); } catch(e) {}
+        
+        if (data.success) {
+          // Actualizar localStorage
+          localStorage.setItem('fc_saldo', data.saldo);
+          // Actualizar UI (Sidebar y Vista de Saldo)
+          var sidebarNum = document.querySelector('.saldo-sidebar .num');
+          if (sidebarNum) sidebarNum.innerText = data.saldo;
+          var saldoGrande = document.getElementById('saldo-numero-grande');
+          if (saldoGrande) saldoGrande.innerText = data.saldo;
+          // Re-evaluar si el botón de calcular debe bloquearse o no
+          evaluarSaldoUI();
+        }
+      };
+      script.src = APPS_SCRIPT_URL + '?action=checkSaldo&email=' + encodeURIComponent(email) + '&t=' + Date.now() + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }  
+
+        // ── INICIALIZACIÓN ──
     window.onload = function() {
       const params = new URLSearchParams(window.location.search);
       const urlStatus = params.get('status');
@@ -1395,6 +1422,10 @@
         showView('workstation');
         cambiarVistaWS('ws-inicio', document.querySelector('.sidebar-item'));
         evaluarSaldoUI();
+        
+        // ¡AQUÍ LLAMAMOS A LA SINCRONIZACIÓN!
+        // Esto preguntará al backend el saldo real en segundo plano y lo actualizará.
+        setTimeout(sincronizarSaldo, 500); 
       } else {
         btn.innerText = 'Iniciar Sesión';
         showView('landing');
