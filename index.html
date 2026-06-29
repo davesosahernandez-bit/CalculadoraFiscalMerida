@@ -912,15 +912,31 @@
       
       var callbackName = 'cb_check_' + Date.now();
       var script = document.createElement('script');
+      
       window[callbackName] = function(data) {
         delete window[callbackName];
         try { document.body.removeChild(script); } catch(e) {}
+        
         if (data.error) { alert(data.error); return; }
+        
+        // Cambiar de vista
         document.getElementById('auth-email-step').style.display = 'none';
         document.getElementById('auth-pin-step').style.display = 'block';
-        document.getElementById('auth-title').innerText = data.exists ? 'Ingresa tu PIN' : 'Verifica tu correo';
-        document.getElementById('auth-pin-text').innerText = data.exists ? 'Ingresa tu PIN de 4 dígitos.' : 'Te enviamos un PIN a tu correo. Ingrésalo aquí.';
+        
+        // Actualizar textos dinámicamente
+        if (data.exists) {
+          // Usuario que ya tiene cuenta
+          document.getElementById('auth-title').innerText = 'Ingresa tu PIN';
+          document.getElementById('auth-sub').innerText = 'Coloca tu código de 4 dígitos para entrar.';
+          document.getElementById('auth-pin-text').innerText = 'Si no lo recuerdas, puedes reenviarlo abajo.';
+        } else {
+          // Usuario nuevo
+          document.getElementById('auth-title').innerText = 'Verifica tu correo';
+          document.getElementById('auth-sub').innerText = 'Te enviamos un PIN a tu correo.';
+          document.getElementById('auth-pin-text').innerText = 'Coloca el código de 4 dígitos aquí para crear tu cuenta.';
+        }
       };
+
       script.src = APPS_SCRIPT_URL + '?action=checkEmail&email=' + encodeURIComponent(email) + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
