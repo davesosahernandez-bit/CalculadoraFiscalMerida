@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect width='36' height='36' rx='8' fill='%2310B981'/><path d='M10 18.5L15.5 24L26 12.5' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FiscalCheck - Estimaciones Fiscales Inmobiliarias</title>
@@ -255,9 +255,15 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-        <a class="logo-container" onclick="irAInicio()">
-      <img src="images/logo.svg" alt="FiscalCheck" style="height: 32px; width: auto; border-radius: 4px;">
-      
+            <a class="logo-container" onclick="irAInicio()" style="text-decoration: none;">
+      <svg width="160" height="36" viewBox="0 0 160 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cuadro Esmeralda -->
+        <rect width="36" height="36" rx="8" fill="#10B981"/>
+        <!-- Palomita Blanca -->
+        <path d="M10 18.5L15.5 24L26 12.5" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Texto Blanco -->
+        <text x="48" y="25" font-family="Inter, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" letter-spacing="-0.5">FiscalCheck</text>
+      </svg>
     </a>
         <button id="nav-auth-btn" class="btn-primary" onclick="abrirModalAuth()">Iniciar Sesión</button>
   </nav>
