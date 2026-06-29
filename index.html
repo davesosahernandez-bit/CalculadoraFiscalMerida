@@ -637,15 +637,14 @@
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div style="display:grid; gap:16px;">
           <div>
             <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Fecha de Adquisición</label>
             <input type="month" id="f-fecAdq" style="width:100%; padding:11px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B; background:white;">
           </div>
-          <div>
-            <label style="font-size:13px; font-weight:600; color:#1E293B; display:block; margin-bottom:4px;">Fecha de Escritura</label>
-            <input type="month" id="f-fecVen" style="width:100%; padding:11px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:14px; color:#1E293B; background:white;">
-          </div>
+          <p style="font-size:12px; color:#64748B; background:#F8FAFC; padding:10px; border-radius:8px; border:1px solid #E2E8F0;">
+            ℹ️ La estimación fiscal se calculará con las leyes y el INPC vigentes al día de hoy.
+          </p>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:12px; margin-top:8px; padding:16px; background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0;">
@@ -1031,7 +1030,10 @@
       const tieneDesg = document.getElementById('f-desglose').checked;
       const fecErog = document.getElementById('f-fecErog').value;
       const fecAdq = document.getElementById('f-fecAdq').value;
-      const fecVen = document.getElementById('f-fecVen').value;
+      // Obtener la fecha actual para la "venta" (evita errores de Banxico con fechas futuras)
+      const today = new Date();
+      const mesActual = (today.getMonth() + 1).toString().padStart(2, '0');
+      const añoActual = today.getFullYear().toString();
       const cleanNum = (id) => document.getElementById(id).value.replace(/,/g, '');
 
       let pctTerreno = 20, pctConstr = 80;
@@ -1053,8 +1055,8 @@
         avaluoPericial: cleanNum('f-avaluo') || 0,
         mesAdquisicion: fecAdq ? fecAdq.split('-')[1] : '',
         añoAdquisicion: fecAdq ? fecAdq.split('-')[0] : '',
-        mesVenta: fecVen ? fecVen.split('-')[1] : '',
-        añoVenta: fecVen ? fecVen.split('-')[0] : '',
+        mesVenta: mesActual,       // <--- Usar mes actual
+        añoVenta: añoActual,       // <--- Usar año actual
         esCasaHabitacion: document.getElementById('f-casa').checked,
         numeroEnajenantes: document.getElementById('f-copropiedad').checked ? document.getElementById('f-ne').value : 1,
         deduccionesOriginales: tieneDeducc ? cleanNum('f-deducciones') : 0,
@@ -1065,8 +1067,8 @@
         pctConstr: pctConstr
       };
 
-      if (!payload.precioVenta || !payload.valorCatastral || !payload.costoOriginal || !payload.mesAdquisicion || !payload.mesVenta) {
-        alert('Por favor completa los campos obligatorios (Precios y Fechas).');
+      if (!payload.precioVenta || !payload.valorCatastral || !payload.costoOriginal || !payload.mesAdquisicion) {
+        alert('Por favor completa los campos obligatorios (Precios y Fecha de Adquisición).');
         return;
       }
 
