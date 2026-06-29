@@ -1091,7 +1091,7 @@
       activarPaso(0);
       intervaloPasos = setInterval(function() {
         if (pasoActual < PASOS.length - 1) { pasoActual++; activarPaso(pasoActual); }
-      }, 8000);
+      }, 3000);
 
       var callbackName = 'cb_calc_' + Date.now();
       var script = document.createElement('script');
